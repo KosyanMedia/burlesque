@@ -126,7 +126,6 @@ func (q *Queue) Push(msg Message) {
 func (q *Queue) Fetch() (Message, error) {
 	i := q.Counter.Next()
 	key := NewKey(q.Name, i)
-
 	msg, err := storage.Get(key)
 	if err != nil {
 		rollbar.Error("error", err)
@@ -273,14 +272,14 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	infoJson, _ := json.Marshal(info)
-	fmt.Fprintf(w, string(infoJson))
+	w.Write(infoJson)
 }
 
 func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]int)
 	info["goroutines"] = runtime.NumGoroutine()
 	infoJson, _ := json.Marshal(info)
-	fmt.Fprintf(w, string(infoJson))
+	w.Write(infoJson)
 }
 
 func PublishHandler(w http.ResponseWriter, r *http.Request) {
@@ -292,9 +291,8 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	queueName := r.FormValue("queue")
 
 	go Register(queueName, msg)
-
 	log.Println("Published message of", len(msg), "bytes to queue", queueName)
-	fmt.Fprintf(w, "OK")
+	w.Write([]byte("OK"))
 }
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
@@ -326,7 +324,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Queue", res.Queue)
-	fmt.Fprintf(w, string(res.Message))
+	w.Write(res.Message)
 
 	log.Println("Recieved message of", len(res.Message), "bytes from queue", res.Queue)
 	finished <- true
