@@ -20,8 +20,8 @@ func SaveState() {
 	state := make(ServerState)
 	for _, q := range queues {
 		state[q.Name] = QueueState{
-			"wi": q.Counter.Write,
-			"ri": q.Counter.Read,
+			"wi": q.Counter.WriteIndex,
+			"ri": q.Counter.ReadIndex,
 		}
 	}
 
