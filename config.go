@@ -21,7 +21,7 @@ var (
 func SetupConfig() {
 	cfg.Storage = *flag.String("storage", "-", "Kyoto Cabinet storage path (e.g. storage.kch#zcomp=gz#capsiz=524288000)")
 	cfg.Env = *flag.String("environment", "development", "Process environment: development or production")
-	cfg.Port = *flag.Int("port", 4401, "HTTP port to listen")
+	cfg.Port = *flag.Int("port", 4401, "Server HTTP port")
 	cfg.Rollbar = *flag.String("rollbar", "", "Rollbar token")
 	flag.Parse()
 }
