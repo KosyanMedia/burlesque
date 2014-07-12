@@ -12,7 +12,7 @@ type (
 
 const (
 	StateMetaKey      = "state"
-	StateSaveInterval = 10
+	StateSaveInterval = 1 // seconds
 )
 
 func SaveState() {
@@ -55,7 +55,7 @@ func LoadState() {
 }
 
 func KeepStatePersisted() {
-	t := time.NewTicker(time.Second)
+	t := time.NewTicker(StateSaveInterval * time.Second)
 	for {
 		<-t.C
 		SaveState()
