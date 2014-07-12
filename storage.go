@@ -26,14 +26,16 @@ func SetupStorage() {
 
 func PersistMessages() {
 	for {
-		payload := <-saver
-		i := payload.Queue.Counter.Write + 1
-		key := NewKey(payload.Queue.Name, i)
+		p := <-saver
 
-		if err := storage.Set(key, payload.Message); err != nil {
-			rollbar.Error("error", err)
-		} else {
-			payload.Queue.Counter.Incr()
-		}
+		p.Queue.Counter.Write(func(i uint) bool {
+			key := NewKey(p.Queue.Name, i)
+			err := storage.Set(key, p.Message)
+			if err != nil {
+				Error(err, "Failed to write %d bytes to record '%s'", len(p.Message), key)
+			}
+
+			return (err != nil)
+		})
 	}
 }
