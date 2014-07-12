@@ -74,14 +74,14 @@ Displays information about the queues, their messages and current subscriptions 
 Response:
 ```json
 {
-	"urgent": {
-		"messages": 0,
-		"subscriptions": 0
-	},
-	"someday": {
-		"messages": 0,
-		"subscriptions": 0
-	}
+    "urgent": {
+        "messages": 0,
+        "subscriptions": 0
+    },
+    "someday": {
+        "messages": 0,
+        "subscriptions": 0
+    }
 }
 ```
 
@@ -94,8 +94,8 @@ Displays debug information about the queue process. Currenty displays the number
 /debug
 ```
 Response:
-```
+```json
 {
-	"goroutines": 13
+    "goroutines": 13
 }
 ```
