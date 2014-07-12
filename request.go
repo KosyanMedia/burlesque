@@ -35,12 +35,9 @@ func Register(q string, msg Message) {
 func Process(r *Request) {
 	for _, queueName := range r.Queues {
 		q := GetQueue(queueName)
-		if q.Counter.Distance() > 0 {
-			if msg, err := q.Fetch(); err != nil {
-				go r.Callback(nil)
-			} else {
-				go r.Callback(&Response{Queue: queueName, Message: msg})
-			}
+		msg, ok := q.TryFetch()
+		if ok {
+			go r.Callback(&Response{Queue: queueName, Message: msg})
 			return
 		}
 	}

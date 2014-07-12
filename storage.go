@@ -2,10 +2,13 @@ package main
 
 import (
 	"github.com/ezotrank/cabinetgo"
-	"github.com/stvp/rollbar"
+	"strconv"
+	"strings"
 )
 
 type (
+	Message []byte
+	Key     []byte
 	Payload struct {
 		Queue   *Queue
 		Message Message
@@ -17,10 +20,16 @@ var (
 	saver   = make(chan Payload, 1000)
 )
 
+func NewKey(queue string, index uint) Key {
+	istr := strconv.FormatUint(uint64(index), 10)
+	key := strings.Join([]string{queue, istr}, "_")
+	return Key(key)
+}
+
 func SetupStorage() {
 	err := storage.Open(cfg.Storage, cabinet.KCOWRITER|cabinet.KCOCREATE)
 	if err != nil {
-		panic(err)
+		Error(err, "Failed to open database '%s'", cfg.Storage)
 	}
 }
 

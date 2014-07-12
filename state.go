@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/stvp/rollbar"
 	"time"
 )
 
@@ -28,8 +27,7 @@ func SaveState() {
 	stateJson, _ := json.Marshal(state)
 	key := Key(StateMetaKey)
 	if err := storage.Set(key, stateJson); err != nil {
-		rollbar.Error("error", err)
-		log.Printf("Failed to persist state")
+		Error(err, "Failed to persist state")
 		return
 	}
 }
@@ -40,13 +38,12 @@ func LoadState() {
 
 	stateJson, err := storage.Get(key)
 	if err != nil {
-		log.Printf("State not found")
+		Log("State not found")
 		return
 	}
 
 	if err := json.Unmarshal(stateJson, &state); err != nil {
-		rollbar.Error("error", err)
-		log.Printf("Failed to load state")
+		Log("Failed to load state")
 		return
 	}
 
@@ -54,7 +51,7 @@ func LoadState() {
 		RegisterQueue(queueName, meta["wi"], meta["ri"])
 	}
 
-	log.Printf("State successfully loaded")
+	Log("State successfully loaded")
 }
 
 func KeepStatePersisted() {
