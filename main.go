@@ -15,19 +15,24 @@ func HandleShutdown() {
 
 	go func() {
 		<-ch
+
 		SaveState()
 		Log("State successfully persisted")
+
 		storage.Close()
-		rollbar.Wait()
 		Log("Storage closed")
-		Log("Server stopped")
-		os.Exit(1)
+
+		Log("Waiting for rollbar...")
+		rollbar.Wait()
+
+		Log("Stopped")
+		os.Exit(0)
 	}()
 }
 
 func main() {
-	SetupLogging()
 	SetupConfig()
+	SetupLogging()
 	SetupStorage()
 	SetupServer()
 	HandleShutdown()
