@@ -12,10 +12,11 @@ var (
 )
 
 func (q *Queue) Push(msg Message) {
-	saver <- Payload{
+	p := Payload{
 		Queue:   q,
 		Message: msg,
 	}
+	Persist(p)
 }
 
 func (q *Queue) TryFetch() (Message, bool) {

@@ -16,8 +16,8 @@ type (
 )
 
 var (
-	storage = cabinet.New()
-	saver   = make(chan Payload, 1000)
+	storage  = cabinet.New()
+	payloads = make(chan Payload, 1000)
 )
 
 func NewKey(queue string, index uint) Key {
@@ -33,9 +33,13 @@ func SetupStorage() {
 	}
 }
 
+func Persist(p Payload) {
+	payloads <- p
+}
+
 func PersistMessages() {
 	for {
-		p := <-saver
+		p := <-payloads
 
 		p.Queue.Counter.Write(func(i uint) bool {
 			key := NewKey(p.Queue.Name, i)
@@ -44,7 +48,7 @@ func PersistMessages() {
 				Error(err, "Failed to write %d bytes to record '%s'", len(p.Message), key)
 			}
 
-			return (err != nil)
+			return (err == nil)
 		})
 	}
 }
