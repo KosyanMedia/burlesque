@@ -1,6 +1,8 @@
 package main
 
-import ()
+import (
+	"sync"
+)
 
 const (
 	MaxIndex = ^uint(0)
@@ -8,44 +10,57 @@ const (
 
 type (
 	Counter struct {
-		Write  uint
-		Read   uint
-		stream chan uint
-		inLoop bool
+		WriteIndex uint
+		ReadIndex  uint
+		mutex      sync.Mutex
+		stream     chan uint
+		streaming  bool
 	}
 )
 
-func NewCounter(wi, ri uint) *Counter {
-	c := &Counter{Write: wi, Read: ri}
-	c.stream = make(chan uint)
-	go c.Loop()
+func NewCounter(wi, ri uint) Counter {
+	c := Counter{
+		WriteIndex: wi,
+		ReadIndex:  ri,
+		stream:     make(chan uint),
+		streaming:  false,
+	}
+	if c.Distance() > 0 {
+		go c.Stream()
+	}
 	return c
 }
 
-func (c *Counter) Incr() {
-	c.Write++
-	if !c.inLoop {
-		c.inLoop = true
-		go c.Loop()
+func (c *Counter) Write(proc func(i uint) bool) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	ok := proc(c.WriteIndex + 1)
+	if ok {
+		c.WriteIndex++
+		if !c.streaming {
+			go c.Stream()
+		}
 	}
 }
 
-func (c *Counter) Next() uint {
+func (c *Counter) Read() uint {
 	return <-c.stream
 }
 
 func (c *Counter) Distance() uint {
-	d := c.Write - c.Read
+	d := c.WriteIndex - c.ReadIndex
 	if d < 0 {
 		d += MaxIndex
 	}
 	return d
 }
 
-func (c *Counter) Loop() {
-	for c.Write > c.Read {
-		c.stream <- c.Read + 1
-		c.Read++
+func (c *Counter) Stream() {
+	c.streaming = true
+	for c.WriteIndex > c.ReadIndex {
+		c.stream <- c.ReadIndex + 1
+		c.ReadIndex++
 	}
-	c.inLoop = false
+	c.streaming = false
 }
