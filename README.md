@@ -192,8 +192,8 @@ Publication can be done via both `GET` and `POST` methods. To publish a message 
 Server will respond with `OK` message.
 
 #### Example
-```
-/publish?queue=urgent&msg=Process+this+message+as+soon+as+possible!
+```bash
+curl '127.0.0.1:4401/publish?queue=urgent' -d 'Process this message as soon as possible!'
 ```
 Response
 ```
@@ -207,8 +207,8 @@ Tries to fetch a message from one of the queues given. If there is a message at 
 Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the `,` (quote) character.
 
 #### Example
-```
-/subscribe?queues=urgent,someday
+```bash
+curl '127.0.0.1:4401/subscribe?queues=urgent,someday'
 ```
 Response
 ```
@@ -220,8 +220,8 @@ Process this message as soon as possible!
 Displays information about the queues, their messages and current subscriptions encoded in JSON format.
 
 #### Example
-```
-/status
+```bash
+curl 127.0.0.1:4401/status
 ```
 Response
 ```json
@@ -242,8 +242,8 @@ Response
 Displays debug information about the queue process. Currenty displays the number of goroutines only.
 
 #### Example
-```
-/debug
+```basg
+curl 127.0.0.1:4401/debug
 ```
 Response
 ```json
