@@ -22,12 +22,12 @@ func Log(format string, args ...interface{}) {
 
 func Debug(format string, args ...interface{}) {
 	if cfg.Env == "development" {
-		logger.Printf("[DEBUG]"+format, args...)
+		logger.Printf("[DEBUG] "+format, args...)
 	}
 }
 
 func Error(err error, format string, args ...interface{}) {
-	logger.Printf("[ERROR]"+format, args...)
+	logger.Printf("[ERROR] "+format, args...)
 
 	if cfg.Env == "development" {
 		panic(err)
