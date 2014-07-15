@@ -9,12 +9,16 @@ const (
 )
 
 type (
+	// Counter is responsible for operating queue read and write indexes
 	Counter struct {
-		WriteIndex uint
-		ReadIndex  uint
-		mutex      sync.Mutex
-		stream     chan uint
-		streaming  bool
+		WriteIndex uint // Number of the record last written to the queue
+		ReadIndex  uint // Number of the record last read from the queue
+		// If WriteIndex is greater than ReadIndex then there are unread messages
+		// If WriteIndex is less tham ReadIndex then MaxIndex was reached
+
+		mutex     sync.Mutex
+		stream    chan uint
+		streaming bool
 	}
 )
 
