@@ -34,14 +34,16 @@ func (q *Queue) Fetch() (Message, bool) {
 	msg, err := storage.Get(key)
 	if err != nil {
 		Error(err, "Failed to read record '%s'", key)
+		return msg, false
 	}
 
 	err = storage.Remove(key)
 	if err != nil {
 		Error(err, "Failed to delete record '%s'", key)
+		return msg, false
 	}
 
-	return msg, (err == nil)
+	return msg, true
 }
 
 func GetQueue(name string) *Queue {
