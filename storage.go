@@ -27,9 +27,9 @@ func NewKey(queue string, index uint) Key {
 }
 
 func SetupStorage() {
-	err := storage.Open(cfg.Storage, cabinet.KCOWRITER|cabinet.KCOCREATE)
+	err := storage.Open(Config.Storage, cabinet.KCOWRITER|cabinet.KCOCREATE)
 	if err != nil {
-		Error(err, "Failed to open database '%s'", cfg.Storage)
+		Error(err, "Failed to open database '%s'", Config.Storage)
 	}
 }
 
