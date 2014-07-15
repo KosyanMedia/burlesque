@@ -12,8 +12,8 @@ var (
 
 func SetupLogging() {
 	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds)
-	rollbar.Token = cfg.Rollbar
-	rollbar.Environment = cfg.Env
+	rollbar.Token = Config.Rollbar
+	rollbar.Environment = Config.Env
 }
 
 func Log(format string, args ...interface{}) {
@@ -21,7 +21,7 @@ func Log(format string, args ...interface{}) {
 }
 
 func Debug(format string, args ...interface{}) {
-	if cfg.Env == "development" {
+	if Config.Env == "development" {
 		logger.Printf("[DEBUG] "+format, args...)
 	}
 }
@@ -29,10 +29,10 @@ func Debug(format string, args ...interface{}) {
 func Error(err error, format string, args ...interface{}) {
 	logger.Printf("[ERROR] "+format, args...)
 
-	if cfg.Env == "development" {
+	if Config.Env == "development" {
 		panic(err)
 	}
-	if cfg.Rollbar != "" {
+	if Config.Rollbar != "" {
 		rollbar.Error("error", err)
 	}
 }

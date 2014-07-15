@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/stvp/rollbar"
 	"net/http"
 	"os"
@@ -41,7 +42,8 @@ func main() {
 	go PersistMessages()
 
 	Log("GOMAXPROCS = %d", runtime.GOMAXPROCS(-1))
-	Log("Starting HTTP server on port %d", cfg.Port)
+	Log("Starting HTTP server on port %d", Config.Port)
 
-	http.ListenAndServe(cfg.PortString(), nil)
+	port := fmt.Sprintf(":%d", Config.Port)
+	http.ListenAndServe(port, nil)
 }
