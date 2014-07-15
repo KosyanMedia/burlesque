@@ -46,7 +46,7 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	queueName := r.FormValue("queue")
 	go Register(queueName, msg)
 
-	Log("Published message of %d bytes to queue %s", len(msg), queueName)
+	Debug("Published message of %d bytes to queue %s", len(msg), queueName)
 	w.Write([]byte("OK"))
 }
 
@@ -81,7 +81,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Queue", res.Queue)
 	w.Write(res.Message)
 
-	Log("Recieved message of %d bytes from queue %s", len(res.Message), res.Queue)
+	Debug("Recieved message of %d bytes from queue %s", len(res.Message), res.Queue)
 	finished <- true
 }
 
