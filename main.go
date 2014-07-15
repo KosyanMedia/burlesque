@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime"
 	"syscall"
 )
 
@@ -41,8 +40,6 @@ func main() {
 	go KeepStatePersisted()
 	go PersistMessages()
 
-	Log("GOMAXPROCS = %d", runtime.GOMAXPROCS(-1))
-	Log("Starting HTTP server on port %d", Config.Port)
 
 	port := fmt.Sprintf(":%d", Config.Port)
 	http.ListenAndServe(port, nil)
