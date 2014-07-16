@@ -16,8 +16,8 @@ type (
 		// If WriteIndex is greater than ReadIndex then there are unread messages
 		// If WriteIndex is less tham ReadIndex then MaxIndex was reached
 
+		Read      chan uint
 		mutex     sync.Mutex
-		stream    chan uint
 		streaming *sync.Cond
 	}
 )
@@ -45,15 +45,6 @@ func (c *Counter) Write(proc func(i uint) bool) {
 	if ok {
 		c.WriteIndex++
 		c.streaming.Signal()
-	}
-}
-
-func (c *Counter) Read(abort chan bool) uint {
-	select {
-	case i := <-c.stream:
-		return i
-	case <-abort:
-		return 0
 	}
 }
 
