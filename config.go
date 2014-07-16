@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	DefaultProductionStorage = "burlesque.kch#opts=c#zcomp=gz#msiz=524288000"
+	// DefaultProductionStorage = "burlesque.kch#opts=c#zcomp=gz#msiz=524288000"
+	DefaultProductionStorage = "burlesque.kch#msiz=524288000"
 )
 
 var (
@@ -18,10 +19,10 @@ var (
 )
 
 func SetupConfig() {
-	Config.Storage = *flag.String("storage", "-", "Kyoto Cabinet storage path (e.g. "+DefaultProductionStorage+")")
-	Config.Env = *flag.String("environment", "development", "Process environment: development or production")
-	Config.Port = *flag.Int("port", 4401, "Server HTTP port")
-	Config.Rollbar = *flag.String("rollbar", "", "Rollbar token")
+	flag.StringVar(&Config.Storage, "storage", "-", "Kyoto Cabinet storage path (e.g. "+DefaultProductionStorage+")")
+	flag.StringVar(&Config.Env, "environment", "development", "Process environment: development or production")
+	flag.IntVar(&Config.Port, "port", 4401, "Server HTTP port")
+	flag.StringVar(&Config.Rollbar, "rollbar", "", "Rollbar token")
 	flag.Parse()
 
 	if Config.Env == "production" && Config.Storage == "-" {
