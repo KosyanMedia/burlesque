@@ -3,7 +3,6 @@ package main
 type (
 	Queue struct {
 		Name    string
-		Counter Counter
 		Counter *Counter
 	}
 )
@@ -28,16 +27,16 @@ func (q *Queue) Push(msg Message) bool {
 	return (err == nil)
 }
 
-func (q *Queue) TryFetch() (Message, bool) {
+func (q *Queue) TryFetch(abort chan bool) (Message, bool) {
 	if q.Counter.Distance() > 0 {
-		return q.Fetch()
+		return q.Fetch(abort)
 	} else {
 		return Message{}, false
 	}
 }
 
-func (q *Queue) Fetch() (Message, bool) {
-	i := q.Counter.Read()
+func (q *Queue) Fetch(abort chan bool) (Message, bool) {
+	i := q.Counter.Read(abort)
 	key := NewKey(q.Name, i)
 
 	msg, err := storage.Get(key)

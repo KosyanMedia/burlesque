@@ -19,8 +19,7 @@ func HandleShutdown() {
 		SaveState()
 		Log("State successfully persisted")
 
-		storage.Close()
-		Log("Storage closed")
+		CloseStorage()
 
 		Log("Waiting for rollbar...")
 		rollbar.Wait()
@@ -38,9 +37,10 @@ func main() {
 	HandleShutdown()
 	LoadState()
 	go KeepStatePersisted()
-	go PersistMessages()
-
 
 	port := fmt.Sprintf(":%d", Config.Port)
-	http.ListenAndServe(port, nil)
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		Error(err, "Error starting server on port %d", Config.Port)
+	}
 }
