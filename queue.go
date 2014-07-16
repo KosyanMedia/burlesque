@@ -12,12 +12,20 @@ var (
 	queues = make(map[string]*Queue)
 )
 
-func (q *Queue) Push(msg Message) {
-	p := Payload{
-		Queue:   q,
-		Message: msg,
-	}
-	Persist(p)
+func (q *Queue) Push(msg Message) bool {
+	var err error
+
+	q.Counter.Write(func(i uint) bool {
+		key := NewKey(q.Name, i)
+		err = storage.Set(key, msg)
+		if err != nil {
+			Error(err, "Failed to write %d bytes to record '%s'", len(msg), key)
+		}
+
+		return (err == nil)
+	})
+
+	return (err == nil)
 }
 
 func (q *Queue) TryFetch() (Message, bool) {

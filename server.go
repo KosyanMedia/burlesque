@@ -44,10 +44,15 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	queueName := r.FormValue("queue")
-	go Register(queueName, msg)
+	ok := Register(queueName, msg)
 
-	Debug("Published message of %d bytes to queue %s", len(msg), queueName)
-	w.Write([]byte("OK"))
+	if ok {
+		Debug("Published message of %d bytes to queue %s", len(msg), queueName)
+		w.Write([]byte("OK"))
+	} else {
+		Debug("Failed to publish message of %d bytes to queue %s", len(msg), queueName)
+		http.Error(w, "FAIL", 500)
+	}
 }
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
