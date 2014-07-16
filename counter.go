@@ -29,7 +29,7 @@ func NewCounter(wi, ri uint) *Counter {
 	c := &Counter{
 		WriteIndex: wi,
 		ReadIndex:  ri,
-		stream:     make(chan uint),
+		Read:       make(chan uint),
 		streaming:  sync.NewCond(m),
 	}
 
@@ -62,7 +62,7 @@ func (c *Counter) Stream() {
 			c.streaming.Wait()
 		}
 
-		c.stream <- c.ReadIndex + 1
+		c.Read <- c.ReadIndex + 1
 		c.ReadIndex++
 	}
 }
