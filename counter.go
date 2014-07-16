@@ -48,8 +48,13 @@ func (c *Counter) Write(proc func(i uint) bool) {
 	}
 }
 
-func (c *Counter) Read() uint {
-	return <-c.stream
+func (c *Counter) Read(abort chan bool) uint {
+	select {
+	case i := <-c.stream:
+		return i
+	case <-abort:
+		return 0
+	}
 }
 
 func (c *Counter) Distance() uint {

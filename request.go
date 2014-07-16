@@ -8,6 +8,7 @@ type (
 	Request struct {
 		Queues   []string
 		Callback func(*Response)
+		Abort    chan bool
 	}
 	Response struct {
 		Queue   string
@@ -19,23 +20,27 @@ var (
 	pool = []*Request{}
 )
 
-func Register(q string, msg Message) {
+func Register(q string, msg Message) bool {
 	for i, r := range pool {
 		for _, queueName := range r.Queues {
 			if queueName == q {
 				go r.Callback(&Response{Queue: queueName, Message: msg})
 				pool = append(pool[:i], pool[i+1:]...)
 				return
+
+				return true
 			}
 		}
 	}
-	GetQueue(q).Push(msg)
+
+	ok := GetQueue(q).Push(msg)
+	return ok
 }
 
 func Process(r *Request) {
 	for _, queueName := range r.Queues {
 		q := GetQueue(queueName)
-		msg, ok := q.TryFetch()
+		msg, ok := q.TryFetch(r.Abort)
 		if ok {
 			go r.Callback(&Response{Queue: queueName, Message: msg})
 			return

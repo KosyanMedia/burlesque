@@ -57,13 +57,14 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	rch := make(chan *Response)
+	abort := make(chan bool, 1)
 	req := &Request{
 		Queues: strings.Split(r.FormValue("queues"), ","),
 		Callback: func(r *Response) {
 			rch <- r
 		},
+		Abort: abort,
 	}
-
 	go Process(req)
 
 	disconnected := w.(http.CloseNotifier).CloseNotify()
@@ -72,8 +73,8 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		select {
 		case <-disconnected:
 			rch <- nil
+			abort <- true
 		case <-finished:
-			break
 		}
 		Purge(req)
 	}()
