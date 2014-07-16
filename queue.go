@@ -36,9 +36,15 @@ func (q *Queue) TryFetch(abort chan bool) (Message, bool) {
 }
 
 func (q *Queue) Fetch(abort chan bool) (Message, bool) {
-	i := q.Counter.Read(abort)
-	key := NewKey(q.Name, i)
+	var i uint
 
+	select {
+	case i = <-q.Counter.Read:
+	case <-abort:
+		return Message{}, false
+	}
+
+	key := NewKey(q.Name, i)
 	msg, err := storage.Get(key)
 	if err != nil {
 		Error(err, "Failed to read record '%s'", key)
