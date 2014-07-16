@@ -24,9 +24,9 @@ func SaveState() {
 		}
 	}
 
-	stateJson, _ := json.Marshal(state)
+	jsn, _ := json.Marshal(state)
 	key := Key(StateMetaKey)
-	if err := storage.Set(key, stateJson); err != nil {
+	if err := storage.Set(key, jsn); err != nil {
 		Error(err, "Failed to persist state")
 		return
 	}
@@ -36,13 +36,14 @@ func LoadState() {
 	state := make(ServerState)
 	key := Key(StateMetaKey)
 
-	stateJson, err := storage.Get(key)
+	jsn, err := storage.Get(key)
 	if err != nil {
 		Log("State not found")
 		return
 	}
 
-	if err := json.Unmarshal(stateJson, &state); err != nil {
+	err = json.Unmarshal(jsn, &state)
+	if err != nil {
 		Log("Failed to load state")
 		return
 	}

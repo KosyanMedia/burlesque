@@ -24,16 +24,16 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	infoJson, _ := json.Marshal(info)
-	w.Write(infoJson)
+	jsn, _ := json.Marshal(info)
+	w.Write(jsn)
 }
 
 func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]int)
 	info["goroutines"] = runtime.NumGoroutine()
 
-	infoJson, _ := json.Marshal(info)
-	w.Write(infoJson)
+	jsn, _ := json.Marshal(info)
+	w.Write(jsn)
 }
 
 func PublishHandler(w http.ResponseWriter, r *http.Request) {
