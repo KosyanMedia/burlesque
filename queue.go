@@ -4,6 +4,7 @@ type (
 	Queue struct {
 		Name    string
 		Counter Counter
+		Counter *Counter
 	}
 )
 
