@@ -29,8 +29,14 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DebugHandler(w http.ResponseWriter, r *http.Request) {
-	info := make(map[string]int)
+	info := make(map[string]interface{})
 	info["goroutines"] = runtime.NumGoroutine()
+
+	s, err := storage.Status()
+	if err != nil {
+		Error(err, "Failed to get Kyoto Cabinet status")
+	}
+	info["kyoto_cabinet"] = s
 
 	jsn, _ := json.Marshal(info)
 	w.Write(jsn)
