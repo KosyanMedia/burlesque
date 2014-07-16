@@ -18,7 +18,7 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	for _, r := range pool {
+	for _, r := range pool.Requests {
 		for _, q := range r.Queues {
 			info[q]["subscriptions"]++
 		}
@@ -44,7 +44,7 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	queueName := r.FormValue("queue")
-	ok := Register(queueName, msg)
+	ok := RegisterPublication(queueName, msg)
 
 	if ok {
 		Debug("Published message of %d bytes to queue %s", len(msg), queueName)
@@ -65,7 +65,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		},
 		Abort: abort,
 	}
-	go Process(req)
+	go RegisterSubscription(req)
 
 	disconnected := w.(http.CloseNotifier).CloseNotify()
 	finished := make(chan bool)
@@ -74,9 +74,9 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		case <-disconnected:
 			rch <- nil
 			abort <- true
+			req.Purge()
 		case <-finished:
 		}
-		Purge(req)
 	}()
 
 	res := <-rch

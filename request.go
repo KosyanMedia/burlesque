@@ -1,7 +1,7 @@
 package main
 
 import (
-	"reflect"
+	"sync"
 )
 
 type (
@@ -9,6 +9,7 @@ type (
 		Queues   []string
 		Callback func(*Response)
 		Abort    chan bool
+		Dead     bool
 	}
 	Response struct {
 		Queue   string
@@ -17,27 +18,32 @@ type (
 )
 
 var (
-	pool = []*Request{}
+	pool struct {
+		Requests []*Request
+		mutex    sync.Mutex
+	}
 )
 
-func Register(q string, msg Message) bool {
-	for i, r := range pool {
+func RegisterPublication(q string, msg Message) bool {
+	pool.mutex.Lock()
+	for i, r := range pool.Requests {
 		for _, queueName := range r.Queues {
 			if queueName == q {
 				go r.Callback(&Response{Queue: queueName, Message: msg})
-				pool = append(pool[:i], pool[i+1:]...)
-				return
+				pool.Requests = append(pool.Requests[:i], pool.Requests[i+1:]...)
+				defer pool.mutex.Unlock()
 
 				return true
 			}
 		}
 	}
+	pool.mutex.Unlock()
 
 	ok := GetQueue(q).Push(msg)
 	return ok
 }
 
-func Process(r *Request) {
+func RegisterSubscription(r *Request) {
 	for _, queueName := range r.Queues {
 		q := GetQueue(queueName)
 		msg, ok := q.TryFetch(r.Abort)
@@ -46,14 +52,22 @@ func Process(r *Request) {
 			return
 		}
 	}
-	pool = append(pool, r)
+
+	pool.mutex.Lock()
+	pool.Requests = append(pool.Requests, r)
+	pool.mutex.Unlock()
 }
 
-func Purge(r *Request) {
-	for i, req := range pool {
-		if reflect.ValueOf(r).Pointer() == reflect.ValueOf(req).Pointer() {
-			pool = append(pool[:i], pool[i+1:]...)
-			return
+func (r *Request) Purge() {
+	pool.mutex.Lock()
+	defer pool.mutex.Unlock()
+
+	r.Dead = true
+	deleted := 0
+	for i, req := range pool.Requests {
+		if req.Dead {
+			pool.Requests = append(pool.Requests[:i-deleted], pool.Requests[i-deleted+1:]...)
+			deleted++
 		}
 	}
 }
