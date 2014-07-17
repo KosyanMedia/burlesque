@@ -6,7 +6,7 @@ import (
 
 const (
 	// With compression: burlesque.kch#opts=c#zcomp=gz#msiz=524288000
-	DefaultProductionStorage = "burlesque.kch#dfunit=100#msiz=512M"
+	DefaultProductionStorage = "burlesque.kch#dfunit=8#msiz=512M"
 )
 
 var (

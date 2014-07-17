@@ -6,10 +6,10 @@ import (
 
 type (
 	Request struct {
-		Queues   []string
-		Callback func(*Response)
-		Abort    chan bool
-		Dead     bool
+		Queues     []string
+		ResponseCh chan Response
+		Abort      chan bool
+		Dead       bool
 	}
 	Response struct {
 		Queue   string
@@ -25,37 +25,61 @@ var (
 )
 
 func RegisterPublication(q string, msg Message) bool {
-	pool.mutex.Lock()
-	for i, r := range pool.Requests {
-		for _, queueName := range r.Queues {
-			if queueName == q {
-				go r.Callback(&Response{Queue: queueName, Message: msg})
-				pool.Requests = append(pool.Requests[:i], pool.Requests[i+1:]...)
-				defer pool.mutex.Unlock()
-
-				return true
+	for _, r := range pool.Requests {
+		if r.Dead {
+			continue
+		}
+		for _, qname := range r.Queues {
+			if qname == q {
+				rsp := Response{Queue: q, Message: msg}
+				ok := r.TryRespond(rsp)
+				if ok {
+					return true
+				}
 			}
 		}
 	}
-	pool.mutex.Unlock()
 
 	ok := GetQueue(q).Push(msg)
 	return ok
 }
 
 func RegisterSubscription(r *Request) {
-	for _, queueName := range r.Queues {
-		q := GetQueue(queueName)
+	for _, qname := range r.Queues {
+		q := GetQueue(qname)
 		msg, ok := q.TryFetch(r.Abort)
 		if ok {
-			go r.Callback(&Response{Queue: queueName, Message: msg})
+			rsp := Response{Queue: qname, Message: msg}
+			ok := r.TryRespond(rsp)
+			if !ok {
+				q.Push(msg)
+			}
+
 			return
 		}
 	}
 
-	pool.mutex.Lock()
 	pool.Requests = append(pool.Requests, r)
-	pool.mutex.Unlock()
+}
+
+func (r *Request) TryRespond(rsp Response) bool {
+	okch := make(chan bool)
+
+	go func() {
+		defer func() {
+			err := recover()
+			if err != nil {
+				r.Dead = true
+				okch <- false
+			}
+		}()
+
+		r.ResponseCh <- rsp
+		okch <- true
+	}()
+
+	ok := <-okch
+	return ok
 }
 
 func (r *Request) Purge() {
