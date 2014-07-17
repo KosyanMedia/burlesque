@@ -33,7 +33,7 @@ func CloseStorage() {
 
 	err = storage.Sync(true)
 	if err != nil {
-		Error(err, "Failed to sync storage")
+		Error(err, "Failed to sync storage (hard)")
 	} else {
 		Log("Storage synchronized")
 	}

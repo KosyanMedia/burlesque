@@ -60,5 +60,9 @@ func KeepStatePersisted() {
 	for {
 		<-t.C
 		SaveState()
+		err := storage.Sync(false)
+		if err != nil {
+			Error(err, "Failed to sync storage")
+		}
 	}
 }
