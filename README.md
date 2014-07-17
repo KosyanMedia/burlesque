@@ -106,7 +106,7 @@ The table below describes tuning parameters.
 | `bnum`     | Base hash table size (number of buckets of the hash table) |
 | `capcnt`   | Capacity limit by the number of records (`#capcnt=10000` means "keep in memory 10,000 records maximum) |
 | `capsiz`   | Capacity limit by the size of records (`#capsiz=536870912` means "keep in memory all the records that fit into 512 megabytes) |
-| `dfunit`   | Unit step number of auto defragmentation |
+| `dfunit`   | Unit step number of auto defragmentation (`#dfunit=8` means "run defragmentation every 8 fragmentations detected"). |
 | `fpow`     | Power of the capacity of the free block pool |
 | `log`      | Path to the log file. Use `-` for the STDOUT, or `+` for the STDERR |
 | `logkinds` | Kinds of logged messages. The value can be `debug`, `info`, `warn` or `error` |
@@ -204,7 +204,7 @@ OK
 
 Tries to fetch a message from one of the queues given. If there is a message at least in one of these queues, the message will be removed from the queue and returned as response body. The name of the queue from which the message was taken from will be provided inside a `Queue` response header.
 
-Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the `,` (quote) character.
+Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the comma character `,`.
 
 #### Example
 ```bash
