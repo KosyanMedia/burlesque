@@ -68,13 +68,13 @@ func (r *Request) TryRespond(rsp Response) bool {
 	go func() {
 		defer func() {
 			err := recover()
-			if err != nil {
+			if err != nil { // Panic!
 				r.Dead = true
 				okch <- false
 			}
 		}()
 
-		r.ResponseCh <- rsp
+		r.ResponseCh <- rsp // If channel is already closed expect a panic
 		okch <- true
 	}()
 
