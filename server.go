@@ -49,27 +49,25 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		msg = Message(r.FormValue("msg"))
 	}
 
-	queueName := r.FormValue("queue")
-	ok := RegisterPublication(queueName, msg)
+	qname := r.FormValue("queue")
+	ok := RegisterPublication(qname, msg)
 
 	if ok {
-		Debug("Published message of %d bytes to queue %s", len(msg), queueName)
+		Debug("Published message of %d bytes to queue %s", len(msg), qname)
 		w.Write([]byte("OK"))
 	} else {
-		Debug("Failed to publish message of %d bytes to queue %s", len(msg), queueName)
+		Debug("Failed to publish message of %d bytes to queue %s", len(msg), qname)
 		http.Error(w, "FAIL", 500)
 	}
 }
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
-	rch := make(chan *Response)
+	rch := make(chan Response)
 	abort := make(chan bool, 1)
 	req := &Request{
-		Queues: strings.Split(r.FormValue("queues"), ","),
-		Callback: func(r *Response) {
-			rch <- r
-		},
-		Abort: abort,
+		Queues:     strings.Split(r.FormValue("queues"), ","),
+		ResponseCh: rch,
+		Abort:      abort,
 	}
 	go RegisterSubscription(req)
 
@@ -78,15 +76,15 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		select {
 		case <-disconnected:
-			rch <- nil
+			close(rch)
 			abort <- true
-			req.Purge()
 		case <-finished:
 		}
+		req.Purge()
 	}()
 
-	res := <-rch
-	if res == nil {
+	res, ok := <-rch
+	if !ok {
 		return
 	}
 

@@ -48,8 +48,8 @@ func LoadState() {
 		return
 	}
 
-	for queueName, meta := range state {
-		RegisterQueue(queueName, meta["wi"], meta["ri"])
+	for qname, meta := range state {
+		RegisterQueue(qname, meta["wi"], meta["ri"])
 	}
 
 	Log("State successfully loaded")
