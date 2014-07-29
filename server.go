@@ -8,6 +8,14 @@ import (
 	"strings"
 )
 
+func StartServer() {
+	port := fmt.Sprintf(":%d", Config.Port)
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		Error(err, "Error starting server on port %d", Config.Port)
+	}
+}
+
 func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]map[string]uint)
 

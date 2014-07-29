@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,10 +35,5 @@ func main() {
 	HandleShutdown()
 	LoadState()
 	go KeepStatePersisted()
-
-	port := fmt.Sprintf(":%d", Config.Port)
-	err := http.ListenAndServe(port, nil)
-	if err != nil {
-		Error(err, "Error starting server on port %d", Config.Port)
-	}
+	StartServer()
 }
