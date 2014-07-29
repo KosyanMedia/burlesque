@@ -8,6 +8,10 @@ import (
 	"syscall"
 )
 
+const (
+	Version = "0.1.3"
+)
+
 func HandleShutdown() {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGINT)
