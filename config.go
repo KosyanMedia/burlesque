@@ -19,7 +19,7 @@ var (
 
 func SetupConfig() {
 	flag.StringVar(&Config.Storage, "storage", "-", "Kyoto Cabinet storage path (e.g. "+DefaultProductionStorage+")")
-	flag.StringVar(&Config.Env, "environment", "development", "Process environment: development or production")
+	flag.StringVar(&Config.Env, "environment", "production", "Process environment: production or development")
 	flag.IntVar(&Config.Port, "port", 4401, "Server HTTP port")
 	flag.Parse()
 
