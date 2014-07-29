@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/stvp/rollbar"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,9 +19,6 @@ func HandleShutdown() {
 		Log("State successfully persisted")
 
 		CloseStorage()
-
-		Log("Waiting for rollbar...")
-		rollbar.Wait()
 
 		Log("Stopped")
 		os.Exit(0)
