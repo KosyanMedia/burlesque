@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -45,7 +47,20 @@ func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		Error(err, "Failed to get Kyoto Cabinet status")
 	}
-	info["kyoto_cabinet"] = s
+	s = s[:len(s)-1] // Removing trailing new line
+
+	ks := make(map[string]interface{})
+	tokens := strings.Split(s, "\n")
+	for _, t := range tokens {
+		tt := strings.Split(t, "\t")
+		if tt[0] == "path" {
+			ks[tt[0]] = tt[1]
+		} else {
+			num, _ := strconv.Atoi(tt[1])
+			ks[tt[0]] = num
+		}
+	}
+	info["kyoto_cabinet"] = ks
 
 	jsn, _ := json.Marshal(info)
 	w.Write(jsn)
