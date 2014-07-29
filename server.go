@@ -30,6 +30,7 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 
 func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]interface{})
+	info["version"] = Version
 	info["goroutines"] = runtime.NumGoroutine()
 
 	s, err := storage.Status()
