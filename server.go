@@ -53,10 +53,10 @@ func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	tokens := strings.Split(s, "\n")
 	for _, t := range tokens {
 		tt := strings.Split(t, "\t")
-		if tt[0] == "path" {
+		num, err := strconv.Atoi(tt[1])
+		if err != nil {
 			ks[tt[0]] = tt[1]
 		} else {
-			num, _ := strconv.Atoi(tt[1])
 			ks[tt[0]] = num
 		}
 	}
