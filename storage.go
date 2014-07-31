@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ezotrank/cabinetgo"
 	"strconv"
 	"strings"
+
+	"bitbucket.org/ww/cabinet"
 )
 
 type (

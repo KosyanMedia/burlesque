@@ -35,6 +35,6 @@ func Error(err error, format string, args ...interface{}) {
 	if Config.Env == "development" {
 		panic(err)
 	} else {
-		logger.Printf("        ", err.Error())
+		logger.Printf("        %s", err.Error())
 	}
 }
