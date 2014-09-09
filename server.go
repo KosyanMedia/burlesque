@@ -77,10 +77,8 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	ok := RegisterPublication(qname, msg)
 
 	if ok {
-		Debug("Published message of %d bytes to queue %s", len(msg), qname)
 		w.Write([]byte("OK"))
 	} else {
-		Debug("Failed to publish message of %d bytes to queue %s", len(msg), qname)
 		http.Error(w, "FAIL", 500)
 	}
 }
@@ -115,7 +113,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Queue", res.Queue)
 	w.Write(res.Message)
 
-	Debug("Recieved message of %d bytes from queue %s", len(res.Message), res.Queue)
 	finished <- true
 }
 
