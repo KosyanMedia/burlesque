@@ -10,26 +10,26 @@ import (
 	"strings"
 )
 
-func StartServer() {
-	port := fmt.Sprintf(":%d", Config.Port)
+func startServer() {
+	port := fmt.Sprintf(":%d", config.port)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
-		Error(err, "Error starting server on port %d", Config.Port)
+		alert(err, "Error starting server on port %d", config.port)
 	}
 }
 
-func StatusHandler(w http.ResponseWriter, r *http.Request) {
+func statusHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]map[string]uint)
 
 	for _, q := range queues {
-		info[q.Name] = map[string]uint{
-			"messages":      q.Counter.Distance(),
+		info[q.name] = map[string]uint{
+			"messages":      q.counter.distance(),
 			"subscriptions": 0,
 		}
 	}
 
-	for _, r := range pool.Requests {
-		for _, q := range r.Queues {
+	for _, r := range pool.requests {
+		for _, q := range r.queues {
 			info[q]["subscriptions"]++
 		}
 	}
@@ -38,14 +38,14 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsn)
 }
 
-func DebugHandler(w http.ResponseWriter, r *http.Request) {
+func debugHandler(w http.ResponseWriter, r *http.Request) {
 	info := make(map[string]interface{})
-	info["version"] = Version
+	info["version"] = version
 	info["goroutines"] = runtime.NumGoroutine()
 
 	s, err := storage.Status()
 	if err != nil {
-		Error(err, "Failed to get Kyoto Cabinet status")
+		alert(err, "Failed to get Kyoto Cabinet status")
 	}
 	s = s[:len(s)-1] // Removing trailing new line
 
@@ -66,15 +66,15 @@ func DebugHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsn)
 }
 
-func PublishHandler(w http.ResponseWriter, r *http.Request) {
+func publishHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	msg, _ := ioutil.ReadAll(r.Body)
 	if len(msg) == 0 {
-		msg = Message(r.FormValue("msg"))
+		msg = message(r.FormValue("msg"))
 	}
 
 	qname := r.FormValue("queue")
-	ok := RegisterPublication(qname, msg)
+	ok := registerPublication(qname, msg)
 
 	if ok {
 		w.Write([]byte("OK"))
@@ -83,15 +83,15 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
-	rch := make(chan Response)
+func subscriptionHandler(w http.ResponseWriter, r *http.Request) {
+	rch := make(chan response)
 	abort := make(chan bool, 1)
-	req := &Request{
-		Queues:     strings.Split(r.FormValue("queues"), ","),
-		ResponseCh: rch,
-		Abort:      abort,
+	req := &request{
+		queues:     strings.Split(r.FormValue("queues"), ","),
+		responseCh: rch,
+		abort:      abort,
 	}
-	go RegisterSubscription(req)
+	go registerSubscription(req)
 
 	disconnected := w.(http.CloseNotifier).CloseNotify()
 	finished := make(chan bool)
@@ -102,7 +102,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 			abort <- true
 		case <-finished:
 		}
-		req.Purge()
+		req.purge()
 	}()
 
 	res, ok := <-rch
@@ -110,15 +110,15 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Queue", res.Queue)
-	w.Write(res.Message)
+	w.Header().Set("Queue", res.queue)
+	w.Write(res.message)
 
 	finished <- true
 }
 
-func SetupServer() {
-	http.HandleFunc("/status", StatusHandler)
-	http.HandleFunc("/debug", DebugHandler)
-	http.HandleFunc("/publish", PublishHandler)
-	http.HandleFunc("/subscribe", SubscriptionHandler)
+func setupServer() {
+	http.HandleFunc("/status", statusHandler)
+	http.HandleFunc("/debug", debugHandler)
+	http.HandleFunc("/publish", publishHandler)
+	http.HandleFunc("/subscribe", subscriptionHandler)
 }

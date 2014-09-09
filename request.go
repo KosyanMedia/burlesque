@@ -5,34 +5,34 @@ import (
 )
 
 type (
-	Request struct {
-		Queues     []string
-		ResponseCh chan Response
-		Abort      chan bool
-		Dead       bool
+	request struct {
+		queues     []string
+		responseCh chan response
+		abort      chan bool
+		dead       bool
 	}
-	Response struct {
-		Queue   string
-		Message Message
+	response struct {
+		queue   string
+		message message
 	}
 )
 
 var (
 	pool struct {
-		Requests []*Request
+		requests []*request
 		mutex    sync.Mutex
 	}
 )
 
-func RegisterPublication(q string, msg Message) bool {
-	for _, r := range pool.Requests {
-		if r.Dead {
+func registerPublication(q string, msg message) bool {
+	for _, r := range pool.requests {
+		if r.dead {
 			continue
 		}
-		for _, qname := range r.Queues {
+		for _, qname := range r.queues {
 			if qname == q {
-				rsp := Response{Queue: q, Message: msg}
-				ok := r.TryRespond(rsp)
+				rsp := response{queue: q, message: msg}
+				ok := r.tryRespond(rsp)
 				if ok {
 					return true
 				}
@@ -40,41 +40,41 @@ func RegisterPublication(q string, msg Message) bool {
 		}
 	}
 
-	ok := GetQueue(q).Push(msg)
+	ok := getQueue(q).push(msg)
 	return ok
 }
 
-func RegisterSubscription(r *Request) {
-	for _, qname := range r.Queues {
-		q := GetQueue(qname)
-		msg, ok := q.TryFetch(r.Abort)
+func registerSubscription(r *request) {
+	for _, qname := range r.queues {
+		q := getQueue(qname)
+		msg, ok := q.tryFetch(r.abort)
 		if ok {
-			rsp := Response{Queue: qname, Message: msg}
-			ok := r.TryRespond(rsp)
+			rsp := response{queue: qname, message: msg}
+			ok := r.tryRespond(rsp)
 			if !ok {
-				q.Push(msg)
+				q.push(msg)
 			}
 
 			return
 		}
 	}
 
-	pool.Requests = append(pool.Requests, r)
+	pool.requests = append(pool.requests, r)
 }
 
-func (r *Request) TryRespond(rsp Response) bool {
+func (r *request) tryRespond(rsp response) bool {
 	okch := make(chan bool)
 
 	go func() {
 		defer func() {
 			err := recover()
 			if err != nil { // Panic!
-				r.Dead = true
+				r.dead = true
 				okch <- false
 			}
 		}()
 
-		r.ResponseCh <- rsp // If channel is already closed expect a panic
+		r.responseCh <- rsp // If channel is already closed expect a panic
 		okch <- true
 	}()
 
@@ -82,15 +82,15 @@ func (r *Request) TryRespond(rsp Response) bool {
 	return ok
 }
 
-func (r *Request) Purge() {
+func (r *request) purge() {
 	pool.mutex.Lock()
 	defer pool.mutex.Unlock()
 
-	r.Dead = true
+	r.dead = true
 	deleted := 0
-	for i, req := range pool.Requests {
-		if req.Dead {
-			pool.Requests = append(pool.Requests[:i-deleted], pool.Requests[i-deleted+1:]...)
+	for i, req := range pool.requests {
+		if req.dead {
+			pool.requests = append(pool.requests[:i-deleted], pool.requests[i-deleted+1:]...)
 			deleted++
 		}
 	}

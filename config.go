@@ -5,14 +5,14 @@ import (
 )
 
 var (
-	Config struct {
-		Storage string
-		Port    int
+	config struct {
+		storage string
+		port    int
 	}
 )
 
-func SetupConfig() {
-	flag.StringVar(&Config.Storage, "storage", "-", "Kyoto Cabinet storage path (e.g. burlesque.kch#dfunit=8#msiz=512M)")
-	flag.IntVar(&Config.Port, "port", 4401, "Server HTTP port")
+func setupConfig() {
+	flag.StringVar(&config.storage, "storage", "-", "Kyoto Cabinet storage path (e.g. burlesque.kch#dfunit=8#msiz=512M)")
+	flag.IntVar(&config.port, "port", 4401, "Server HTTP port")
 	flag.Parse()
 }

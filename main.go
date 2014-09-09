@@ -7,33 +7,33 @@ import (
 )
 
 const (
-	Version = "0.1.3"
+	version = "0.1.3"
 )
 
-func HandleShutdown() {
+func handleShutdown() {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
 		<-ch
 
-		SaveState()
-		Log("State successfully persisted")
+		saveState()
+		log("State successfully persisted")
 
-		CloseStorage()
+		closeStorage()
 
-		Log("Stopped")
+		log("Stopped")
 		os.Exit(0)
 	}()
 }
 
 func main() {
-	SetupConfig()
-	SetupLogging()
-	SetupStorage()
-	SetupServer()
-	HandleShutdown()
-	LoadState()
-	go KeepStatePersisted()
-	StartServer()
+	setupConfig()
+	setupLogging()
+	setupStorage()
+	setupServer()
+	handleShutdown()
+	loadState()
+	go keepStatePersisted()
+	startServer()
 }

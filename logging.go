@@ -1,29 +1,29 @@
 package main
 
 import (
-	"log"
+	loglib "log"
 	"os"
 	"runtime"
 )
 
 var (
-	logger *log.Logger
+	logger *loglib.Logger
 )
 
-func SetupLogging() {
-	logger = log.New(os.Stdout, "", log.Ldate|log.Lmicroseconds)
+func setupLogging() {
+	logger = loglib.New(os.Stdout, "", loglib.Ldate|loglib.Lmicroseconds)
 
-	Log("Burlesque v%s started", Version)
-	Log("GOMAXPROCS is set to %d", runtime.GOMAXPROCS(-1))
-	Log("Storage path: %s", Config.Storage)
-	Log("Server is running at http://127.0.0.1:%d", Config.Port)
+	log("Burlesque v%s started", version)
+	log("GOMAXPROCS is set to %d", runtime.GOMAXPROCS(-1))
+	log("Storage path: %s", config.storage)
+	log("Server is running at http://127.0.0.1:%d", config.port)
 }
 
-func Log(format string, args ...interface{}) {
+func log(format string, args ...interface{}) {
 	logger.Printf("[INFO]  "+format, args...)
 }
 
-func Error(err error, format string, args ...interface{}) {
+func alert(err error, format string, args ...interface{}) {
 	logger.Printf("[ERROR] "+format, args...)
 	logger.Printf("        %s", err.Error())
 }
