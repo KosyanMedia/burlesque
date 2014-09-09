@@ -8,41 +8,42 @@ import (
 )
 
 type (
-	Message []byte
-	Key     []byte
+	message []byte
+	key     []byte
 )
 
 var (
 	storage = cabinet.New()
 )
 
-func NewKey(queue string, index uint) Key {
+func newKey(queue string, index uint) key {
 	istr := strconv.FormatUint(uint64(index), 10)
-	key := strings.Join([]string{queue, istr}, "_")
-	return Key(key)
+	k := strings.Join([]string{queue, istr}, "_")
+
+	return key(k)
 }
 
-func SetupStorage() {
-	err := storage.Open(Config.Storage, cabinet.KCOWRITER|cabinet.KCOCREATE)
+func setupStorage() {
+	err := storage.Open(config.storage, cabinet.KCOWRITER|cabinet.KCOCREATE)
 	if err != nil {
-		Error(err, "Failed to open database '%s'", Config.Storage)
+		alert(err, "Failed to open database '%s'", config.storage)
 	}
 }
 
-func CloseStorage() {
+func closeStorage() {
 	var err error
 
 	err = storage.Sync(true)
 	if err != nil {
-		Error(err, "Failed to sync storage (hard)")
+		alert(err, "Failed to sync storage (hard)")
 	} else {
-		Log("Storage synchronized")
+		log("Storage synchronized")
 	}
 
 	err = storage.Close()
 	if err != nil {
-		Error(err, "Failed to close storage")
+		alert(err, "Failed to close storage")
 	} else {
-		Log("Storage closed")
+		log("Storage closed")
 	}
 }

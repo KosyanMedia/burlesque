@@ -1,24 +1,24 @@
 package main
 
 type (
-	Queue struct {
-		Name    string
-		Counter *Counter
+	queue struct {
+		name    string
+		counter *counter
 	}
 )
 
 var (
-	queues = make(map[string]*Queue)
+	queues = make(map[string]*queue)
 )
 
-func (q *Queue) Push(msg Message) bool {
+func (q *queue) push(msg message) bool {
 	var err error
 
-	q.Counter.Write(func(i uint) bool {
-		key := NewKey(q.Name, i)
+	q.counter.write(func(i uint) bool {
+		key := newKey(q.name, i)
 		err = storage.Set(key, msg)
 		if err != nil {
-			Error(err, "Failed to write %d bytes to record '%s'", len(msg), key)
+			alert(err, "Failed to write %d bytes to record '%s'", len(msg), key)
 		}
 
 		return (err == nil)
@@ -27,49 +27,49 @@ func (q *Queue) Push(msg Message) bool {
 	return (err == nil)
 }
 
-func (q *Queue) TryFetch(abort chan bool) (Message, bool) {
-	if q.Counter.Distance() > 0 {
-		return q.Fetch(abort)
+func (q *queue) tryFetch(abort chan bool) (message, bool) {
+	if q.counter.distance() > 0 {
+		return q.fetch(abort)
 	} else {
-		return Message{}, false
+		return message{}, false
 	}
 }
 
-func (q *Queue) Fetch(abort chan bool) (Message, bool) {
+func (q *queue) fetch(abort chan bool) (message, bool) {
 	var i uint
 
 	select {
-	case i = <-q.Counter.Read:
+	case i = <-q.counter.read:
 	case <-abort:
-		return Message{}, false
+		return message{}, false
 	}
 
-	key := NewKey(q.Name, i)
-	msg, err := storage.Get(key)
+	k := newKey(q.name, i)
+	msg, err := storage.Get(k)
 	if err != nil {
-		Error(err, "Failed to read record '%s'", key)
+		alert(err, "Failed to read record '%s'", k)
 		return msg, false
 	}
 
-	err = storage.Remove(key)
+	err = storage.Remove(k)
 	if err != nil {
-		Error(err, "Failed to delete record '%s'", key)
+		alert(err, "Failed to delete record '%s'", k)
 		return msg, false
 	}
 
 	return msg, true
 }
 
-func GetQueue(name string) *Queue {
+func getQueue(name string) *queue {
 	if _, ok := queues[name]; !ok {
-		RegisterQueue(name, 0, 0)
+		registerQueue(name, 0, 0)
 	}
 	return queues[name]
 }
 
-func RegisterQueue(name string, wi, ri uint) {
-	queues[name] = &Queue{
-		Name:    name,
-		Counter: NewCounter(wi, ri),
+func registerQueue(name string, wi, ri uint) {
+	queues[name] = &queue{
+		name:    name,
+		counter: newCounter(wi, ri),
 	}
 }

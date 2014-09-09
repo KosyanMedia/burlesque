@@ -6,63 +6,64 @@ import (
 )
 
 type (
-	QueueState  map[string]uint
-	ServerState map[string]QueueState
+	queueState  map[string]uint
+	serverState map[string]queueState
 )
 
 const (
-	StateMetaKey      = "state"
-	StateSaveInterval = 1 // seconds
+	stateMetaKey      = "state"
+	stateSaveInterval = 1 // seconds
 )
 
-func SaveState() {
-	state := make(ServerState)
+func saveState() {
+	state := make(serverState)
 	for _, q := range queues {
-		state[q.Name] = QueueState{
-			"wi": q.Counter.WriteIndex,
-			"ri": q.Counter.ReadIndex,
+		state[q.name] = queueState{
+			"wi": q.counter.writeIndex,
+			"ri": q.counter.readIndex,
 		}
 	}
 
 	jsn, _ := json.Marshal(state)
-	key := Key(StateMetaKey)
-	if err := storage.Set(key, jsn); err != nil {
-		Error(err, "Failed to persist state")
+	k := key(stateMetaKey)
+	if err := storage.Set(k, jsn); err != nil {
+		alert(err, "Failed to persist state")
 		return
 	}
 }
 
-func LoadState() {
-	state := make(ServerState)
-	key := Key(StateMetaKey)
+func loadState() {
+	state := make(serverState)
+	k := key(stateMetaKey)
 
-	jsn, err := storage.Get(key)
+	jsn, err := storage.Get(k)
 	if err != nil {
-		Log("State not found")
+		log("State not found")
 		return
 	}
 
 	err = json.Unmarshal(jsn, &state)
 	if err != nil {
-		Log("Failed to load state")
+		log("Failed to load state")
 		return
 	}
 
 	for qname, meta := range state {
-		RegisterQueue(qname, meta["wi"], meta["ri"])
+		registerQueue(qname, meta["wi"], meta["ri"])
 	}
 
-	Log("State successfully loaded")
+	log("State successfully loaded")
 }
 
-func KeepStatePersisted() {
-	t := time.NewTicker(StateSaveInterval * time.Second)
+func keepStatePersisted() {
+	t := time.NewTicker(stateSaveInterval * time.Second)
+
 	for {
 		<-t.C
-		SaveState()
+		saveState()
 		err := storage.Sync(false)
 		if err != nil {
-			Error(err, "Failed to sync storage")
+			alert(err, "Failed to sync storage")
 		}
 	}
 }
