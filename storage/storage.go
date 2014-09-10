@@ -35,25 +35,29 @@ func New(path string) (s *Storage, err error) {
 	return
 }
 
-func (s *Storage) Get(queue string, abort <-chan struct{}) (message []byte, err error) {
+func (s *Storage) Get(queue string) (message []byte, ok bool) {
 	if _, ok := s.counters[queue]; !ok {
-		s.counters[queue] = newCounter(0, 0)
+		return
+	}
+	if size := s.counters[queue].distance(); size == 0 {
+		return
 	}
 
 	var index uint
 	select {
 	case index = <-s.counters[queue].stream:
-	case <-abort:
+	default:
 		return
 	}
 
 	key := makeKey(queue, index)
-	if message, err = s.kyoto.Get(key); err != nil {
-		return
-	}
+	ok = true
 
-	if err = s.kyoto.Remove(key); err != nil {
-		return
+	if message, err := s.kyoto.Get(key); err != nil {
+		panic(err)
+	}
+	if err := s.kyoto.Remove(key); err != nil {
+		panic(err)
 	}
 
 	return
