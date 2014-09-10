@@ -35,13 +35,12 @@ func New(path string) (s *Storage, err error) {
 	return
 }
 
-func (s *Storage) Get(queue string, abort <-chan struct{}) (message []byte, ok bool) {
+func (s *Storage) Get(queue string, abort <-chan struct{}) (message []byte, err error) {
 	if _, ok := s.counters[queue]; !ok {
 		s.counters[queue] = newCounter(0, 0)
 	}
 
 	var index uint
-
 	select {
 	case index = <-s.counters[queue].stream:
 	case <-abort:
@@ -49,15 +48,13 @@ func (s *Storage) Get(queue string, abort <-chan struct{}) (message []byte, ok b
 	}
 
 	key := makeKey(queue, index)
-	message, err := s.kyoto.Get(key)
-	if err != nil {
+	if message, err = s.kyoto.Get(key); err != nil {
 		return
 	}
 
 	if err = s.kyoto.Remove(key); err != nil {
 		return
 	}
-	ok = true
 
 	return
 }
