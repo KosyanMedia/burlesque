@@ -23,6 +23,7 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 		if s.Queue == queue {
 			select {
 			case <-s.Done():
+				// FIXME: Cleanup needed
 				continue
 			default:
 			}
@@ -42,6 +43,7 @@ func (h *Hub) Sub(s *Subscription) {
 	if msg, ok := h.storage.Get(s.Queue); ok {
 		s.Send(msg)
 	} else {
+		// FIXME: Race condition
 		h.subscribers = append(h.subscribers, s)
 	}
 }
