@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/KosyanMedia/burlesque/hub"
@@ -43,6 +45,10 @@ func main() {
 		os.Exit(0)
 	}()
 
-	setupLogging()
+	fmt.Println("Burlesque v%s started", version)
+	fmt.Println("GOMAXPROCS is set to %d", runtime.GOMAXPROCS(-1))
+	fmt.Println("Storage path: %s", config.storage)
+	fmt.Println("Server is running at http://127.0.0.1:%d", config.port)
+
 	startServer()
 }
