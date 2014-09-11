@@ -90,7 +90,7 @@ func subHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	theHub.Sub(sub)
+	go theHub.Sub(sub)
 	res := <-result
 
 	w.Header().Set("Queue", res.Queue)
