@@ -2,22 +2,26 @@ package hub
 
 type (
 	Subscription struct {
-		queues []string
-		result chan<- []byte
+		Queues []string
+		result chan<- Result
 		done   chan struct{}
+	}
+	Result struct {
+		Queue   string
+		Message []byte
 	}
 )
 
-func NewSubscription(queues []string, result chan<- []byte) *Subscription {
+func NewSubscription(queues []string, result chan<- Result) *Subscription {
 	return &Subscription{
-		queues: queues,
+		Queues: queues,
 		result: result,
 		done:   make(chan struct{}),
 	}
 }
 
 func (s *Subscription) Need(queue string) bool {
-	for _, q := range s.queues {
+	for _, q := range s.Queues {
 		if q == queue {
 			return true
 		}
@@ -26,7 +30,7 @@ func (s *Subscription) Need(queue string) bool {
 	return false
 }
 
-func (s *Subscription) Send(msg []byte) bool {
+func (s *Subscription) Send(res Result) bool {
 	success := make(chan bool)
 
 	go func() {
@@ -36,7 +40,7 @@ func (s *Subscription) Send(msg []byte) bool {
 			}
 		}()
 
-		s.result <- msg
+		s.result <- res
 		success <- true
 	}()
 
