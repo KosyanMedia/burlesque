@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -22,23 +23,9 @@ func startServer() {
 }
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
-	// info := make(map[string]map[string]uint)
-
-	// for _, q := range queues {
-	// 	info[q.name] = map[string]uint{
-	// 		// "messages":      q.counter.distance(),
-	// 		"subscriptions": 0,
-	// 	}
-	// }
-
-	// for _, r := range pool.requests {
-	// 	for _, q := range r.queues {
-	// 		info[q]["subscriptions"]++
-	// 	}
-	// }
-
-	// jsn, _ := json.Marshal(info)
-	// w.Write(jsn)
+	info := theHub.Info()
+	jsn, _ := json.Marshal(info)
+	w.Write(jsn)
 }
 
 func debugHandler(w http.ResponseWriter, r *http.Request) {
