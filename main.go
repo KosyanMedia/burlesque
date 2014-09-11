@@ -42,10 +42,10 @@ func main() {
 		os.Exit(0)
 	}()
 
-	fmt.Println("Burlesque v%s started", version)
-	fmt.Println("GOMAXPROCS is set to %d", runtime.GOMAXPROCS(-1))
-	fmt.Println("Storage path: %s", config.storage)
-	fmt.Println("Server is running at http://127.0.0.1:%d", config.port)
+	fmt.Printf("Burlesque v%s started\n", version)
+	fmt.Printf("GOMAXPROCS is set to %d\n", runtime.GOMAXPROCS(-1))
+	fmt.Printf("Storage path: %s\n", config.storage)
+	fmt.Printf("Server is running at http://127.0.0.1:%d\n", config.port)
 
 	theHub = hub.New(store)
 
