@@ -36,7 +36,7 @@ func New(path string) (s *Storage, err error) {
 }
 
 func (s *Storage) Get(queue string) (message []byte, ok bool) {
-	if _, ok := s.counters[queue]; !ok {
+	if _, exist := s.counters[queue]; !exist {
 		return
 	}
 	if size := s.counters[queue].distance(); size == 0 {
@@ -51,14 +51,14 @@ func (s *Storage) Get(queue string) (message []byte, ok bool) {
 	}
 
 	key := makeKey(queue, index)
-	ok = true
-
-	if message, err := s.kyoto.Get(key); err != nil {
+	message, err := s.kyoto.Get(key)
+	if err != nil {
 		panic(err)
 	}
 	if err := s.kyoto.Remove(key); err != nil {
 		panic(err)
 	}
+	ok = true
 
 	return
 }
