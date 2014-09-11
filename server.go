@@ -15,7 +15,8 @@ func startServer() {
 	http.HandleFunc("/publish", pubHandler)
 	http.HandleFunc("/subscribe", subHandler)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
+	port := fmt.Sprintf(":%d", config.port)
+	if err := http.ListenAndServe(port, nil); err != nil {
 		panic(err)
 	}
 }
@@ -86,10 +87,14 @@ func pubHandler(w http.ResponseWriter, r *http.Request) {
 func subHandler(w http.ResponseWriter, r *http.Request) {
 	result := make(chan hub.Result)
 	queues := strings.Split(r.FormValue("queues"), ",")
+
 	sub := hub.NewSubscription(queues, result)
+	defer sub.Close()
+
+	finished := make(chan struct{})
+	defer close(finished)
 
 	disconnected := w.(http.CloseNotifier).CloseNotify()
-	finished := make(chan struct{})
 	go func() {
 		select {
 		case <-disconnected:
@@ -98,13 +103,10 @@ func subHandler(w http.ResponseWriter, r *http.Request) {
 		case <-finished:
 		}
 	}()
-	defer sub.Close()
 
 	theHub.Sub(sub)
 	res := <-result
 
 	w.Header().Set("Queue", res.Queue)
 	w.Write(res.Message)
-
-	finished <- struct{}{}
 }
