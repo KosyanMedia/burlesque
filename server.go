@@ -16,7 +16,7 @@ func startServer() {
 	http.HandleFunc("/subscribe", subHandler)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.port), nil); err != nil {
-		alert(err, "Error starting server on port %d", config.port)
+		panic(err)
 	}
 }
 
