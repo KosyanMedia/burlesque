@@ -2,6 +2,7 @@ package hub
 
 import (
 	"sync"
+	"time"
 
 	"github.com/KosyanMedia/burlesque/storage"
 )
@@ -15,10 +16,14 @@ type (
 )
 
 func New(st *storage.Storage) *Hub {
-	return &Hub{
+	h := &Hub{
 		storage:     st,
 		subscribers: []*Subscription{},
 	}
+
+	go h.cleanupPeriodically()
+
+	return h
 }
 
 func (h *Hub) Pub(queue string, msg []byte) bool {
@@ -50,6 +55,17 @@ func (h *Hub) Sub(s *Subscription) {
 	}
 
 	h.subscribers = append(h.subscribers, s)
+}
+
+func (h *Hub) cleanupPeriodically() {
+	t := time.NewTicker(1 * time.Second)
+
+	for {
+		select {
+		case <-t.C:
+			h.cleanup()
+		}
+	}
 }
 
 func (h *Hub) cleanup() {
