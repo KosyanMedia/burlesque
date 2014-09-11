@@ -57,6 +57,30 @@ func (h *Hub) Sub(s *Subscription) {
 	h.subscribers = append(h.subscribers, s)
 }
 
+func (h *Hub) Info() map[string]map[string]uint {
+	info := make(map[string]map[string]uint)
+
+	for queue, size := range h.storage.Info() {
+		info[queue] = map[string]uint{
+			"messages":      size,
+			"subscriptions": 0,
+		}
+	}
+	for _, sub := range h.subscribers {
+		for _, queue := range sub.Queues {
+			if _, ok := info[queue]; !ok {
+				info[queue] = map[string]uint{"messages": 0}
+			}
+			if _, ok := info[queue]["subscriptions"]; !ok {
+				info[queue]["subscriptions"] = 0
+			}
+			info[queue]["subscriptions"] += 1
+		}
+	}
+
+	return info
+}
+
 func (h *Hub) cleanupEverySecond() {
 	t := time.NewTicker(1 * time.Second)
 
