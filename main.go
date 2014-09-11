@@ -1,39 +1,48 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/KosyanMedia/burlesque/hub"
+	"github.com/KosyanMedia/burlesque/storage"
 )
 
 const (
-	version = "0.1.3"
+	version = "0.2.0"
 )
 
-func handleShutdown() {
+var (
+	theStorage *storage.Storage
+	theHub     *hub.Hub
+	config     struct {
+		storage string
+		port    int
+	}
+)
+
+func main() {
+	flag.StringVar(&config.storage, "storage", "-", "Kyoto Cabinet storage path (e.g. burlesque.kch#dfunit=8#msiz=512M)")
+	flag.IntVar(&config.port, "port", 4401, "Server HTTP port")
+	flag.Parse()
+
+	theStorage, err := storage.New(config.storage)
+	if err != nil {
+		panic(err)
+	}
+
+	theHub = hub.New(theStorage)
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
 		<-ch
-
-		saveState()
-		log("State successfully persisted")
-
-		closeStorage()
-
-		log("Stopped")
+		theStorage.Close()
 		os.Exit(0)
 	}()
-}
 
-func main() {
-	setupConfig()
 	setupLogging()
-	setupStorage()
-	setupServer()
-	handleShutdown()
-	loadState()
-	go keepStatePersisted()
 	startServer()
 }
