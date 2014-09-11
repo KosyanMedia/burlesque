@@ -78,6 +78,16 @@ func (s *Storage) Put(queue string, message []byte) (err error) {
 	return
 }
 
+func (s *Storage) Info() map[string]uint {
+	info := make(map[string]uint)
+
+	for queue, c := range s.counters {
+		info[queue] = c.distance()
+	}
+
+	return info
+}
+
 func (s *Storage) Close() (err error) {
 	if err = s.kyoto.Sync(true); err != nil {
 		return
@@ -141,5 +151,6 @@ func (s *Storage) keepStatePersisted() {
 }
 
 func makeKey(queue string, index uint) []byte {
+	// TODO: There should be a faster way
 	return []byte(strings.Join([]string{queue, strconv.FormatUint(uint64(index), 10)}, "_"))
 }
