@@ -21,7 +21,7 @@ func New(st *storage.Storage) *Hub {
 		subscribers: []*Subscription{},
 	}
 
-	go h.cleanupPeriodically()
+	go h.cleanupEverySecond()
 
 	return h
 }
@@ -57,7 +57,7 @@ func (h *Hub) Sub(s *Subscription) {
 	h.subscribers = append(h.subscribers, s)
 }
 
-func (h *Hub) cleanupPeriodically() {
+func (h *Hub) cleanupEverySecond() {
 	t := time.NewTicker(1 * time.Second)
 
 	for {

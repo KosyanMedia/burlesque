@@ -17,9 +17,8 @@ const (
 )
 
 var (
-	theStorage *storage.Storage
-	theHub     *hub.Hub
-	config     struct {
+	theHub *hub.Hub
+	config struct {
 		storage string
 		port    int
 	}
@@ -30,18 +29,16 @@ func main() {
 	flag.IntVar(&config.port, "port", 4401, "Server HTTP port")
 	flag.Parse()
 
-	theStorage, err := storage.New(config.storage)
+	store, err := storage.New(config.storage)
 	if err != nil {
 		panic(err)
 	}
 
-	theHub = hub.New(theStorage)
-	ch := make(chan os.Signal)
-	signal.Notify(ch, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGINT)
-
+	shutdown := make(chan os.Signal)
+	signal.Notify(shutdown, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
-		<-ch
-		theStorage.Close()
+		<-shutdown
+		store.Close()
 		os.Exit(0)
 	}()
 
@@ -49,6 +46,8 @@ func main() {
 	fmt.Println("GOMAXPROCS is set to %d", runtime.GOMAXPROCS(-1))
 	fmt.Println("Storage path: %s", config.storage)
 	fmt.Println("Server is running at http://127.0.0.1:%d", config.port)
+
+	theHub = hub.New(store)
 
 	startServer()
 }
