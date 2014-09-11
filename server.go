@@ -86,7 +86,6 @@ func subHandler(w http.ResponseWriter, r *http.Request) {
 		select {
 		case <-disconnected:
 			sub.Close()
-			close(finished)
 		case <-finished:
 		}
 	}()

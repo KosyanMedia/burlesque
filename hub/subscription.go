@@ -52,6 +52,5 @@ func (s *Subscription) Done() <-chan struct{} {
 }
 
 func (s *Subscription) Close() {
-	close(s.result)
 	close(s.done)
 }
