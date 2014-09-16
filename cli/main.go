@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/KosyanMedia/burlesque/client"
 	"github.com/codegangsta/cli"
-	"github.com/localhots/burlesque-golang/client"
 )
 
 func main() {
