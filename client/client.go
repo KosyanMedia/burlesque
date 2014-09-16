@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -18,6 +19,11 @@ const (
 )
 
 type (
+	Config struct {
+		Host    string
+		Port    int
+		Timeout time.Duration
+	}
 	Client struct {
 		Config     *Config
 		httpClient *http.Client
@@ -37,6 +43,12 @@ type (
 		KyotoCabinet map[string]interface{} `json:"kyoto_cabinet"`
 	}
 )
+
+func (c *Config) UseDefaults() {
+	c.Host = "127.0.0.1"
+	c.Port = 4401
+	c.Timeout = 60 * time.Second
+}
 
 func NewClient(c *Config) *Client {
 	return &Client{
