@@ -44,16 +44,32 @@ type (
 	}
 )
 
-func (c *Config) UseDefaults() {
-	c.Host = "127.0.0.1"
-	c.Port = 4401
-	c.Timeout = 60 * time.Second
+func NewConfig() *Config {
+	return &Config{
+		Host:    "127.0.0.1",
+		Port:    4401,
+		Timeout: 60 * time.Second,
+	}
 }
 
 func NewClient(c *Config) *Client {
+	if c == nil {
+		c = NewConfig()
+	}
+
+	transport := http.Transport{
+		Dial: func(network, addr string) (net.Conn, error) {
+			return net.DialTimeout(network, addr, c.Timeout)
+		},
+	}
+
+	client := http.Client{
+		Transport: &transport,
+	}
+
 	return &Client{
 		Config:     c,
-		httpClient: &http.Client{},
+		httpClient: &client,
 	}
 }
 
@@ -80,17 +96,7 @@ func (c *Client) Publish(m *Message) (ok bool) {
 func (c *Client) Subscribe(queues ...string) (m *Message) {
 	url := c.url(subscribeEndpoint, "?queues=", strings.Join(queues, ","))
 
-	transport := http.Transport{
-		Dial: func(network, addr string) (net.Conn, error) {
-			return net.DialTimeout("tcp", addr, c.Config.Timeout)
-		},
-	}
-
-	client := http.Client{
-		Transport: &transport,
-	}
-
-	res, err := client.Get(url)
+	res, err := c.httpClient.Get(url)
 	if err != nil {
 		return
 	}
