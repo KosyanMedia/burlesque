@@ -92,6 +92,19 @@ func main() {
 				}
 			},
 		},
+		{
+			Name:  "status",
+			Usage: "Show server status",
+			Action: func(c *cli.Context) {
+				stat := bsq.Status()
+
+				for _, queue := range stat {
+					fmt.Println(queue.Name)
+					fmt.Println("    Messages:", queue.Messages)
+					fmt.Println("    Subscribers:", queue.Subscribers)
+				}
+			},
+		},
 	}
 	app.CommandNotFound = func(c *cli.Context, cmd string) {
 
