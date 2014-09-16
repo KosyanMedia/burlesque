@@ -1,10 +1,10 @@
 package client
 
 import (
-	"net"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -81,13 +81,16 @@ func (c *Client) Subscribe(queues ...string) (m *Message) {
 	url := c.url(subscribeEndpoint, "?queues=", strings.Join(queues, ","))
 
 	transport := http.Transport{
-        Dial: net.DialTimeout(network, addr, timeout),
-    }
+		Dial: func(network, addr string) (net.Conn, error) {
+			return net.DialTimeout("tcp", addr, c.Config.Timeout)
+		},
+	}
 
-	rdr := bytes.NewReader([]byte)
-	req := http.NewRequest("GET", url, rdr)
-	req.
-	res, err := http.Get(url)
+	client := http.Client{
+		Transport: &transport,
+	}
+
+	res, err := client.Get(url)
 	if err != nil {
 		return
 	}
@@ -164,12 +167,12 @@ func (c *Client) url(path ...string) string {
 }
 
 func TimeoutDialer(cTimeout time.Duration, rwTimeout time.Duration) func(net, addr string) (c net.Conn, err error) {
-    return func(netw, addr string) (net.Conn, error) {
-        conn, err := net.DialTimeout(netw, addr, cTimeout)
-        if err != nil {
-            return nil, err
-        }
-        conn.SetDeadline(time.Now().Add(rwTimeout))
-        return conn, nil
-    }
+	return func(netw, addr string) (net.Conn, error) {
+		conn, err := net.DialTimeout(netw, addr, cTimeout)
+		if err != nil {
+			return nil, err
+		}
+		conn.SetDeadline(time.Now().Add(rwTimeout))
+		return conn, nil
+	}
 }
