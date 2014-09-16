@@ -1,17 +1,17 @@
 # Burlesque
 
-Burlesque is a [message processing queue](http://en.wikipedia.org/wiki/Message_queue) writen in [Go](http://golang.org/). It exposes queues using the [pub/sub HTTP API](#api).
+Burlesque is a [message queue](http://en.wikipedia.org/wiki/Message_queue) server writen in [Go](http://golang.org/). It gives access to queues using the [pub/sub HTTP API](#api).
 
-The general purpose of this queue is to provide tool for inter-process comutication with a memory efficient persisted storage for messages (usually a delayed job description serialized in JSON) published by the application server and later retrieved by other application workers.
+This server's main purpose is to provide an inter-process comunication tool with a memory efficient persistent storage for messages. These messages usually are delayed job descriptions serialized in JSON that are published by the application server and later on retrieved by application workers.
 
-Subscription is done using [long polling](http://en.wikipedia.org/wiki/Push_technology#Long_polling) technique. When application worker subscribes to a queue which is empty at the moment, connection is kept open until another client publishes a message to this queue, or the first client disconnects. If there is a message in the queue it will be removed from the queue and returned to the client.
+Subscription uses [long polling](http://en.wikipedia.org/wiki/Push_technology#Long_polling) technique. When application worker subscribes to a queue which is empty at the moment, connection is kept open until a client publishes a message to this queue, or subscription timeout is reached. If there is already a message in the queue it is removed from the queue and returned to the worker.
 
-Burlesque uses [Kyoto Cabinet](http://fallabs.com/kyotocabinet/) to store messages, which is a powerfull DIY database. Usage of Kyoto Cabinet is thoroughly described in the [storage](#storage) section of this document.
+To store messages Burlesque uses [Kyoto Cabinet](http://fallabs.com/kyotocabinet/), which is a powerful DIY database. Usage of Kyoto Cabinet is thoroughly described in the [storage](#storage) section of this document.
 
 #### Contents
 
 * [Installation](#installation)
-  * [Building on OSX](#building-on-osx)
+  * [Building on OS X](#building-on-os-x)
 * [Starting](#starting)
 * [Storage](#storage)
   * [In-memory databases](#in-memory-databases)
@@ -31,7 +31,7 @@ Burlesque uses [Kyoto Cabinet](http://fallabs.com/kyotocabinet/) to store messag
 
 Download and extract the [latest release](https://github.com/KosyanMedia/burlesque/releases). That's it.
 
-### Building on OSX
+### Building on OS X
 
 First install [Homebrew](http://brew.sh/). Using Homebrew install Go language compiler and tools. Then install Kyoto Cabinet library.
 
@@ -43,7 +43,7 @@ go get github.com/KosyanMedia/burlesque
 
 ## Starting
 
-Use the following arguments to the `burlesque` executable:
+The following arguments are supported by the `burlesque` executable:
 
 | Argument | Description | Defaults |
 | -------- | ----------- | -------- |
@@ -60,11 +60,11 @@ unzip burlesque.zip
 ./burlesque
 ```
 
-By default Burlesque starts on port `4401` in development mode and uses in-memory database `ProtoHashDB`.
+By default, Burlesque starts on port `4401` and uses in-memory database `ProtoHashDB`.
 
 ## Storage
 
-`-storage` argument defines a way the data will be stored into a database. You can read more on Kyoto Cabinet database types [here](http://fallabs.com/kyotocabinet/spex.html#tutorial_dbchart).
+`-storage` argument defines the way data is stored in the database. You can read more on Kyoto Cabinet database types [here](http://fallabs.com/kyotocabinet/spex.html#tutorial_dbchart).
 
 ### In-memory databases
 
@@ -72,17 +72,17 @@ If you need a temporary in-memory storage use the following symbols as the `-sto
 
 | Value | Database Type |
 | ----- | ------------- |
-| `-` | `ProtoHashDB` Prototype hash database. On-memory database implemented with `std::unorderd_map` |
-| `+` | `ProtoTreeDB` Prototype tree database. On-memory database implemented with `std::map` |
-| `:` | `StashDB` Stash database. On-memory database saving memory |
-| `*` | `CacheDB` Cache hash database. On-memory database featuring [LRU](http://en.wikipedia.org/wiki/Cache_algorithms#Examples) deletion |
-| `%` | `GrassDB` Cache tree database. On-memory database of B+ tree: cache with order |
+| `-` | `ProtoHashDB` Prototype hash database. In-memory database implemented with `std::unorderd_map` |
+| `+` | `ProtoTreeDB` Prototype tree database. In-memory database implemented with `std::map` |
+| `:` | `StashDB` Stash database. In-memory database saving memory |
+| `*` | `CacheDB` Cache hash database. In-memory database featuring [LRU](http://en.wikipedia.org/wiki/Cache_algorithms#Examples) deletion |
+| `%` | `GrassDB` Cache tree database. In-memory database of B+ tree: cache with order |
 
 #### Example: `-`
 
 ### Persistent databases
 
-In order to use a persistent database use the path to the database file (or directory) as the `-storage` argument value. File extension in the database path defines the type of the database created.
+In order to use a persistent database, use the path to the database file (or directory) as the `-storage` argument value. File extension in the database path defines the type of the database created.
 
 | File Extension | Database Type |
 | -------------- | ------------- |
@@ -96,23 +96,23 @@ In order to use a persistent database use the path to the database file (or dire
 
 ### Tuning parameters
 
-In addition to defining database type you can also add [tuning parameters](http://fallabs.com/kyotocabinet/spex.html#tips) to the `-storage` argument. Tuning parameters are separated by the `#` symbol, parameters' name and value are separated by the `=` symbol.
+When the database type is defined, you can also add [tuning parameters](http://fallabs.com/kyotocabinet/spex.html#tips) to the `-storage` argument. Tuning parameters are separated by the `#` symbol, parameters' name and value are separated by the `=` symbol.
 
 The table below describes tuning parameters.
 
 | Parameter  | Description |
 | ---------- | ----------- |
-| `apow`     | Power of the alignment of record size |
+| `apow`     | Power of the record size alignment |
 | `bnum`     | Base hash table size (number of buckets of the hash table) |
-| `capcnt`   | Capacity limit by the number of records (`#capcnt=10000` means "keep in memory 10,000 records maximum) |
-| `capsiz`   | Capacity limit by the size of records (`#capsiz=536870912` means "keep in memory all the records that fit into 512 megabytes) |
+| `capcnt`   | Capacity limit by the number of records (`#capcnt=10000` means "keep in memory 10,000 records maximum") |
+| `capsiz`   | Capacity limit by the size of records (`#capsiz=536870912` means "keep in memory all the records that fit into 512 megabytes") |
 | `dfunit`   | Unit step number of auto defragmentation (`#dfunit=8` means "run defragmentation every 8 fragmentations detected"). |
-| `fpow`     | Power of the capacity of the free block pool |
+| `fpow`     | Power of the free block pool capacity |
 | `log`      | Path to the log file. Use `-` for the STDOUT, or `+` for the STDERR |
 | `logkinds` | Kinds of logged messages. The value can be `debug`, `info`, `warn` or `error` |
 | `logpx`    | Prefix of each log message |
 | `msiz`     | Expected database memory usage |
-| `opts`     | Additional options: `s`, `l` and `c` (can be specified together, e.g `lc`). `s` is for "small" and reduces the width of record addressing from 6 bytes to 4 bytes. As the result, the footprint for each record is reduced from 16 bytes to 12 bytes. However, it limits the maximum size of the database file up to 16GB. `l` is for "linear" and changes the data structure of the collision chain of hash table from binary tree to linear linked list. `c` enables compression of the record values. If the value is bigger than 1KB compression is effective. |
+| `opts`     | Additional options: `s`, `l` and `c` (can be specified together, e.g `lc`). `s` stands for "small" and reduces the width of record address from 6 bytes to 4 bytes. As a result, the footprint for each record is reduced from 16 bytes to 12 bytes. However, it limits the maximum size of the database file to 16GB. `l` stands for "linear" and changes the data structure of the collision chain of hash table from binary tree to linear linked list. `c` enables compression of the record values. If the value is bigger than 1KB compression is effective. |
 | `pccap`    | Capacity size of the page cache |
 | `psiz`     | Page size |
 | `rcomp`    | Comparator used to compare key names. `lex` for the lexical comparator, `dec` for the decimal comparator, `lexdesc` for the lexical descending comparator, or `decdesc` for the decimal descending comparator |
@@ -163,21 +163,21 @@ The table below describes support of these parameters by the **persistent** data
 
 ### Production
 
-For production usage it is strongly recommended to choose a **persistent** database. Internally Burlesque uses Kyoto Cabinet as a persisted hash-table, so using `HashDB` would be a smart choise.
+For production usage it is strongly recommended to choose a **persistent** database. Burlesque uses Kyoto Cabinet as a persistent hash-table, which means `HashDB` would be a smart choice.
 
-If the average message size expected to be more than 1KB then compression should be considered as an option. To enable compression you need to pass `opts` tuning parameter to the database path with value `c` (`#opts=c`), you also need to define compression algorithm using the `zcomp` parameter (e.g `#zcomp=gz`).
+If the average message size is expected to be more than 1KB then compression should be considered as an option. To enable compression you need to pass `opts` tuning parameter to the database path with value `c` (`#opts=c`) in it, you also need to define compression algorithm using the `zcomp` parameter (e.g `#zcomp=gz`).
 
-You can define maximum memory limit; when the limit is reached new records are swapped to disk. Memory limit is defined by passing `msiz` parameter with value in bytes (e.g `#msiz=524288000`)
+You can define maximum memory limit; when the limit is reached new records are swapped to disk. Memory limit is defined by value of `msiz` parameter in bytes (e.g `#msiz=524288000`)
 
-So, to use a persisted hash database with enabled compression and 512MB memory limit the `-storage` argument value is `storage.kch#opts=c#zcomp=gz#msiz=524288000`.
+So, to use a persistent hash database with enabled compression and 512MB memory limit the `-storage` argument value should be `storage.kch#opts=c#zcomp=gz#msiz=524288000`.
 
 #### Further tuning
 
-If queues are kept empty all at relatively small size, `bnum` option might be considered (e.g `#bnum=1000`)
+If queues are kept empty or relatively small, `bnum` option might be considered (e.g `#bnum=1000`)
 
 ### Development
 
-If development database don't need to be persisted consider using `ProtoHashDB` (which locks the whole table), `StashDB` (locks record) or `CacheDB` (locks record using a mutex). By default `ProtoHashDB` is used.
+If development database doesn't need to be persisted consider using `ProtoHashDB` (which locks the whole table), `StashDB` (locks record) or `CacheDB` (locks record using a mutex). By default `ProtoHashDB` is used.
 
 ## API
 
@@ -185,11 +185,11 @@ All endpoints exposed by the API are described below.
 
 ## Publish
 
-Publishes a message to the given queue. If there is a connection waiting to recieve a message from this queue, the message would be transfered directly to the awaiting connection.
+This endpoint is used to publish messages to a queue. If there is a connection waiting to recieve a message from this queue, the message will be handed directly to the awaiting worker.
 
-Publication can be done via both `GET` and `POST` methods. To publish a message via `GET` method use the `queue` argument to pass queue name and the `msg` argument to pass message body. To publish a message via `POST` method pass message body via request body instead of the `msg` argument.
+Publication can be done via both `GET` and `POST` methods. Both methods use `queue` argument to pass queue name. When using `GET` method pass message body with `msg` argument. To publish a message via `POST` method pass message body via request body instead of the `msg` argument.
 
-Server will respond with `OK` message.
+In case of success, server will respond with status 200 and `OK` message. Otherwise, there will be status 500 and `FAIL` message. 
 
 #### Example
 ```bash
@@ -202,9 +202,9 @@ OK
 
 ## Subscribe
 
-Tries to fetch a message from one of the queues given. If there is a message at least in one of these queues, the message will be removed from the queue and returned as response body. The name of the queue from which the message was taken from will be provided inside a `Queue` response header.
+This endpoint is used to try and fetch a message from one of the queues given. If at least one of these queues contains a message, this message will be removed from the queue and returned as a response body. The name of the queue where this message was taken from will be provided as a `Queue` response header.
 
-Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the comma character `,`.
+Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the comma character.
 
 #### Example
 ```bash
@@ -217,7 +217,7 @@ Process this message as soon as possible!
 
 ## Status
 
-Displays information about the queues, their messages and current subscriptions encoded in JSON format.
+This endpoint is used to display information about the queues, their messages and current subscriptions encoded in JSON format.
 
 #### Example
 ```bash
@@ -239,10 +239,10 @@ Response
 
 ## Debug
 
-Displays debug information about the queue process. Currenty displays the number of goroutines only.
+This endpoint is used to display debug information about Burlesque process. Currenty displays the number of goroutines only.
 
 #### Example
-```basg
+```bash
 curl 127.0.0.1:4401/debug
 ```
 Response
