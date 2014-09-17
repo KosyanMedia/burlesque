@@ -105,6 +105,14 @@ func main() {
 				}
 			},
 		},
+		{
+			Name:  "debug",
+			Usage: "Show server debug info",
+			Action: func(c *cli.Context) {
+				info := bsq.Status()
+				fmt.Println(info)
+			},
+		},
 	}
 	app.CommandNotFound = func(c *cli.Context, cmd string) {
 
