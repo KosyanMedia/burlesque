@@ -78,11 +78,33 @@ func (s *Storage) Put(queue string, message []byte) (err error) {
 	return
 }
 
-func (s *Storage) Info() map[string]uint {
+func (s *Storage) QueueSizes() map[string]uint {
 	info := make(map[string]uint)
 
 	for queue, c := range s.counters {
 		info[queue] = c.distance()
+	}
+
+	return info
+}
+
+func (s *Storage) Info() map[string]interface{} {
+	info := make(map[string]interface{})
+	status, err := s.kyoto.Status()
+	if err != nil {
+		panic(err)
+	}
+
+	status = status[:len(status)-1] // Removing trailing new line
+	tokens := strings.Split(status, "\n")
+	for _, t := range tokens {
+		tt := strings.Split(t, "\t")
+		num, err := strconv.Atoi(tt[1])
+		if err != nil {
+			info[tt[0]] = tt[1]
+		} else {
+			info[tt[0]] = num
+		}
 	}
 
 	return info

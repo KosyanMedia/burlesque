@@ -13,10 +13,6 @@ import (
 	"github.com/KosyanMedia/burlesque/storage"
 )
 
-const (
-	version = "0.2.0"
-)
-
 func main() {
 	var (
 		storagePath string
@@ -40,7 +36,7 @@ func main() {
 		os.Exit(0)
 	}()
 
-	fmt.Printf("Burlesque v%s started\n", version)
+	fmt.Printf("Burlesque v%s started\n", server.Version)
 	fmt.Printf("GOMAXPROCS is set to %d\n", runtime.GOMAXPROCS(-1))
 	fmt.Printf("Storage path: %s\n", storagePath)
 	fmt.Printf("Server is running at http://127.0.0.1:%d\n", port)
