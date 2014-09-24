@@ -49,9 +49,7 @@ The following arguments are supported by the `burlesque` executable:
 | Argument | Description | Defaults |
 | -------- | ----------- | -------- |
 | `-storage` | Kyoto Cabinet storage path (e.g. `storage.kch#msiz=524288000`) | `-` |
-| `-environment` | Process environment: `development` or `production` | `development` |
 | `-port` | Server HTTP port | `4401` |
-| `-rollbar` | [Rollbar](https://rollbar.com/) token | ||
 
 #### Example
 
