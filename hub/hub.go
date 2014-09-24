@@ -13,6 +13,10 @@ type (
 		subscribers []*Subscription
 		lock        sync.Mutex
 	}
+	Message struct {
+		Queue   string
+		Message []byte
+	}
 )
 
 func New(st *storage.Storage) *Hub {
