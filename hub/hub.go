@@ -62,7 +62,7 @@ func (h *Hub) Sub(s *Subscription) {
 func (h *Hub) Info() map[string]map[string]uint {
 	info := make(map[string]map[string]uint)
 
-	for queue, size := range h.storage.Info() {
+	for queue, size := range h.storage.QueueSizes() {
 		info[queue] = map[string]uint{
 			"messages":      size,
 			"subscriptions": 0,
@@ -81,6 +81,10 @@ func (h *Hub) Info() map[string]map[string]uint {
 	}
 
 	return info
+}
+
+func (h *Hub) StorageInfo() map[string]interface{} {
+	return h.storage.Info()
 }
 
 func (h *Hub) cleanupEverySecond() {
