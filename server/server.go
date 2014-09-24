@@ -32,6 +32,7 @@ func New(port int, h *hub.Hub) *Server {
 	http.HandleFunc("/debug", s.debugHandler)
 	http.HandleFunc("/publish", s.pubHandler)
 	http.HandleFunc("/subscribe", s.subHandler)
+	http.HandleFunc("/flush", s.flushHandler)
 
 	return &s
 }
@@ -96,4 +97,12 @@ func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Queue", res.Queue)
 		w.Write(res.Message)
 	}
+}
+
+func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
+	queues := strings.Split(r.FormValue("queues"), ",")
+	messages := s.hub.Flush(queues)
+
+	jsn, _ := json.Marshal(messages)
+	w.Write(jsn)
 }
