@@ -73,11 +73,11 @@ If you need a temporary in-memory storage use the following symbols as the `-sto
 
 | Value | Database Type |
 | ----- | ------------- |
-| `-` | `ProtoHashDB` Prototype hash database. In-memory database implemented with `std::unorderd_map` |
-| `+` | `ProtoTreeDB` Prototype tree database. In-memory database implemented with `std::map` |
-| `:` | `StashDB` Stash database. In-memory database saving memory |
-| `*` | `CacheDB` Cache hash database. In-memory database featuring [LRU](http://en.wikipedia.org/wiki/Cache_algorithms#Examples) deletion |
-| `%` | `GrassDB` Cache tree database. In-memory database of B+ tree: cache with order |
+| `-` | `ProtoHashDB` Prototype hash database implemented with `std::unorderd_map` |
+| `+` | `ProtoTreeDB` Prototype tree database implemented with `std::map` |
+| `:` | `StashDB` Stash database implemented with `kyotocabinet::TinyHashMap` |
+| `*` | `CacheDB` Cache hash database that features [LRU](http://en.wikipedia.org/wiki/Cache_algorithms#Examples) deletion |
+| `%` | `GrassDB` Cache tree database implemented using B+ tree ordered cache |
 
 #### Example: `-`
 
