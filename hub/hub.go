@@ -35,7 +35,7 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 			default:
 			}
 
-			if ok := s.Send(Result{queue, msg}); ok {
+			if ok := s.Send(Message{queue, msg}); ok {
 				return true
 			}
 		}
@@ -49,7 +49,7 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 func (h *Hub) Sub(s *Subscription) {
 	for _, q := range s.Queues {
 		if msg, ok := h.storage.Get(q); ok {
-			s.Send(Result{q, msg})
+			s.Send(Message{q, msg})
 			return
 		}
 	}
