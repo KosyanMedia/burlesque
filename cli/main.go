@@ -131,7 +131,7 @@ func main() {
 		},
 	}
 	app.CommandNotFound = func(c *cli.Context, cmd string) {
-
+		fmt.Printf("Unknown command %q\n", cmd)
 	}
 
 	app.Run(os.Args)
