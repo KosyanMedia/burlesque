@@ -74,46 +74,42 @@ func NewClient(c *Config) *Client {
 	}
 }
 
-func (c *Client) Publish(m *Message) (ok bool) {
+func (c *Client) Publish(m *Message) bool {
 	rdr := bytes.NewReader(m.Body)
 	url := c.url(publishEndpoint, "?queue=", m.Queue)
 
 	res, err := http.Post(url, "text/plain", rdr)
 	if err != nil {
-		return
+		return false
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return
+		return false
 	}
 
-	ok = (string(body) == "OK")
-
-	return
+	return (string(body) == "OK")
 }
 
-func (c *Client) Subscribe(queues ...string) (m *Message) {
+func (c *Client) Subscribe(queues ...string) *Message {
 	url := c.url(subscribeEndpoint, "?queues=", strings.Join(queues, ","))
 
 	res, err := c.httpClient.Get(url)
 	if err != nil {
-		return
+		return nil
 	}
 
-	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return
+		return nil
 	}
+	res.Body.Close()
 
-	m = &Message{
+	return &Message{
 		Queue: res.Header.Get("Queue"),
 		Body:  body,
 	}
-
-	return
 }
 
 func (c *Client) Status() (stat []*QueueInfo) {
@@ -153,11 +149,11 @@ func (c *Client) Debug() *DebugInfo {
 		return nil
 	}
 
-	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil
 	}
+	res.Body.Close()
 
 	var dbg DebugInfo
 	if err := json.Unmarshal(body, &dbg); err != nil {
@@ -170,16 +166,6 @@ func (c *Client) Debug() *DebugInfo {
 func (c *Client) url(path ...string) string {
 	parts := []string{"http://", c.Config.Host, ":", strconv.Itoa(c.Config.Port)}
 	parts = append(parts, path...)
-	return strings.Join(parts, "")
-}
 
-func TimeoutDialer(cTimeout time.Duration, rwTimeout time.Duration) func(net, addr string) (c net.Conn, err error) {
-	return func(netw, addr string) (net.Conn, error) {
-		conn, err := net.DialTimeout(netw, addr, cTimeout)
-		if err != nil {
-			return nil, err
-		}
-		conn.SetDeadline(time.Now().Add(rwTimeout))
-		return conn, nil
-	}
+	return strings.Join(parts, "")
 }
