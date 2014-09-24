@@ -1,6 +1,6 @@
 # Burlesque
 
-Burlesque is a [message queue](http://en.wikipedia.org/wiki/Message_queue) server writen in [Go](http://golang.org/). It gives access to queues using the [pub/sub HTTP API](#api).
+Burlesque is a [message queue](http://en.wikipedia.org/wiki/Message_queue) server. It gives access to queues using the [pub/sub HTTP API](#api).
 
 This server's main purpose is to provide an inter-process comunication tool with a memory efficient persistent storage for messages. These messages usually are delayed job descriptions serialized in JSON that are published by the application server and later on retrieved by application workers.
 
