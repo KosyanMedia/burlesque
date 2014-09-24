@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -10,25 +10,41 @@ import (
 	"github.com/KosyanMedia/burlesque/hub"
 )
 
-func startServer() {
-	http.HandleFunc("/status", statusHandler)
-	http.HandleFunc("/debug", debugHandler)
-	http.HandleFunc("/publish", pubHandler)
-	http.HandleFunc("/subscribe", subHandler)
+type (
+	Server struct {
+		port int
+		hub  *hub.Hub
+	}
+)
 
-	port := fmt.Sprintf(":%d", config.port)
+func New(port int, h *hub.Hub) *Server {
+	s := Server{
+		port: port,
+		hub:  h,
+	}
+
+	http.HandleFunc("/status", s.statusHandler)
+	http.HandleFunc("/debug", s.debugHandler)
+	http.HandleFunc("/publish", s.pubHandler)
+	http.HandleFunc("/subscribe", s.subHandler)
+
+	return &s
+}
+
+func (s *Server) Start() {
+	port := fmt.Sprintf(":%d", s.port)
 	if err := http.ListenAndServe(port, nil); err != nil {
 		panic(err)
 	}
 }
 
-func statusHandler(w http.ResponseWriter, r *http.Request) {
-	info := theHub.Info()
+func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
+	info := s.hub.Info()
 	jsn, _ := json.Marshal(info)
 	w.Write(jsn)
 }
 
-func debugHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) debugHandler(w http.ResponseWriter, r *http.Request) {
 	// info := make(map[string]interface{})
 	// info["version"] = version
 	// info["goroutines"] = runtime.NumGoroutine()
@@ -56,7 +72,7 @@ func debugHandler(w http.ResponseWriter, r *http.Request) {
 	// w.Write(jsn)
 }
 
-func pubHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	msg, _ := ioutil.ReadAll(r.Body)
 	if len(msg) == 0 {
@@ -64,14 +80,14 @@ func pubHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	queue := r.FormValue("queue")
 
-	if ok := theHub.Pub(queue, msg); ok {
+	if ok := s.hub.Pub(queue, msg); ok {
 		w.Write([]byte("OK"))
 	} else {
 		http.Error(w, "FAIL", 500)
 	}
 }
 
-func subHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 	result := make(chan hub.Result)
 	queues := strings.Split(r.FormValue("queues"), ",")
 
@@ -90,7 +106,7 @@ func subHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	go theHub.Sub(sub)
+	go s.hub.Sub(sub)
 	res := <-result
 
 	w.Header().Set("Queue", res.Queue)
