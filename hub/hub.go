@@ -17,6 +17,10 @@ type (
 		Queue   string
 		Message []byte
 	}
+	MessageDump struct {
+		Queue   string `json:"queue"`
+		Message string `json:"message"`
+	}
 )
 
 func New(st *storage.Storage) *Hub {
@@ -59,6 +63,20 @@ func (h *Hub) Sub(s *Subscription) {
 	}
 
 	h.subscribers = append(h.subscribers, s)
+}
+
+func (h *Hub) Flush(queues []string) (messages []MessageDump) {
+	for _, queue := range queues {
+		for _, msg := range h.storage.Flush(queue) {
+			messages = append(messages, MessageDump{queue, string(msg)})
+		}
+	}
+
+	if messages == nil {
+		messages = []MessageDump{}
+	}
+
+	return
 }
 
 func (h *Hub) Info() map[string]map[string]uint {

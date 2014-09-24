@@ -78,6 +78,20 @@ func (s *Storage) Put(queue string, message []byte) (err error) {
 	return
 }
 
+func (s *Storage) Flush(queue string) (messages [][]byte) {
+	done := make(chan struct{})
+
+	for {
+		if msg, ok := s.Get(queue, done); ok {
+			messages = append(messages, msg)
+		} else {
+			return
+		}
+	}
+
+	return
+}
+
 func (s *Storage) QueueSizes() map[string]uint {
 	info := make(map[string]uint)
 
