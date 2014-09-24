@@ -35,7 +35,7 @@ func New(path string) (s *Storage, err error) {
 	return
 }
 
-func (s *Storage) Get(queue string) (message []byte, ok bool) {
+func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bool) {
 	if _, exist := s.counters[queue]; !exist {
 		return
 	}
@@ -46,7 +46,7 @@ func (s *Storage) Get(queue string) (message []byte, ok bool) {
 	var index uint
 	select {
 	case index = <-s.counters[queue].stream:
-	default:
+	case <-done:
 		return
 	}
 

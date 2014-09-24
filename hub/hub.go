@@ -47,9 +47,9 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 }
 
 func (h *Hub) Sub(s *Subscription) {
-	for _, q := range s.Queues {
-		if msg, ok := h.storage.Get(q); ok {
-			s.Send(Message{q, msg})
+	for _, queue := range s.Queues {
+		if msg, ok := h.storage.Get(queue, s.Done()); ok {
+			s.Send(Message{queue, msg})
 			return
 		}
 	}
