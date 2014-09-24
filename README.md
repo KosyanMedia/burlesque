@@ -248,6 +248,15 @@ curl 127.0.0.1:4401/debug
 Response
 ```json
 {
-    "goroutines": 13
+    "gomaxprocs": 1,
+    "goroutines": 12,
+    "kyoto_cabinet": {
+        "count": 0,
+        "path": "-",
+        "realtype": 16,
+        "size": 0,
+        "type": 16
+    },
+    "version": "0.2.0"
 }
 ```
