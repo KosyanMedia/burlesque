@@ -6,10 +6,6 @@ type (
 		result chan Message
 		done   chan struct{}
 	}
-	Message struct {
-		Queue   string
-		Message []byte
-	}
 )
 
 func NewSubscription(queues []string) *Subscription {
