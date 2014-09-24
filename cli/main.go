@@ -71,8 +71,7 @@ func main() {
 					return
 				}
 
-				ok := bsq.Publish(msg)
-				if ok {
+				if ok := bsq.Publish(msg); ok {
 					fmt.Printf("Message successfully published to queue %q\n", msg.Queue)
 				} else {
 					fmt.Printf("Failed to publish message to queue %q\n", msg.Queue)
@@ -83,9 +82,7 @@ func main() {
 			Name:  "sub",
 			Usage: "Subscribe for message from queue",
 			Action: func(c *cli.Context) {
-				msg := bsq.Subscribe(c.Args()...)
-
-				if msg != nil {
+				if msg := bsq.Subscribe(c.Args()...); msg != nil {
 					fmt.Println(string(msg.Body))
 				} else {
 					fmt.Printf("Failed to recieve message from queues %s\n", strings.Join(c.Args(), ", "))
