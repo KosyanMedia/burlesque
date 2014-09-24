@@ -127,37 +127,37 @@ The table below describes support of these parameters by the **in-memory** datab
 
 | Parameter  | `ProtoHashDB` | `ProtoTreeDB` | `StashDB` | `CacheDB` | `GrassDB` |
 | ---------- | :-----------: | :-----------: | :-------: | :-------: | :-------: |
-| `bnum`     | —             | —             | •         | •         | •         |
-| `capcnt`   | —             | —             | —         | •         | —         |
-| `capsiz`   | —             | —             | —         | •         | —         |
+| `bnum`     |               |               | •         | •         | •         |
+| `capcnt`   |               |               |           | •         |           |
+| `capsiz`   |               |               |           | •         |           |
 | `log`      | •             | •             | •         | •         | •         |
 | `logkinds` | •             | •             | •         | •         | •         |
 | `logpx`    | •             | •             | •         | •         | •         |
-| `opts`     | —             | —             | —         | •         | •         |
-| `pccap`    | —             | —             | —         | —         | •         |
-| `psiz`     | —             | —             | —         | —         | •         |
-| `rcomp`    | —             | —             | —         | —         | •         |
-| `zcomp`    | —             | —             | —         | •         | •         |
-| `zkey`     | —             | —             | —         | •         | •         |
+| `opts`     |               |               |           | •         | •         |
+| `pccap`    |               |               |           |           | •         |
+| `psiz`     |               |               |           |           | •         |
+| `rcomp`    |               |               |           |           | •         |
+| `zcomp`    |               |               |           | •         | •         |
+| `zkey`     |               |               |           | •         | •         |
 
 The table below describes support of these parameters by the **persistent** database types.
 
 | Parameter  | `HashDB` | `TreeDB` | `DirDB` | `ForestDB` | `TextDB` |
 | ---------- | :------: | :------: | :-----: | :--------: | :------: |
-| `apow`     | •        | •        | —       | —          | —        |
-| `bnum`     | •        | •        | —       | —          | —        |
-| `dfunit`   | •        | •        | —       | —          | —        |
-| `fpow`     | •        | •        | —       | —          | —        |
+| `apow`     | •        | •        |         |            |          |
+| `bnum`     | •        | •        |         |            |          |
+| `dfunit`   | •        | •        |         |            |          |
+| `fpow`     | •        | •        |         |            |          |
 | `log`      | •        | •        | •       | •          | •        |
 | `logkinds` | •        | •        | •       | •          | •        |
 | `logpx`    | •        | •        | •       | •          | •        |
-| `msiz`     | •        | •        | —       | —          | —        |
-| `opts`     | •        | •        | •       | •          | —        |
-| `pccap`    | —        | •        | —       | •          | —        |
-| `psiz`     | —        | •        | —       | •          | —        |
-| `rcomp`    | —        | •        | —       | •          | —        |
-| `zcomp`    | •        | •        | •       | •          | —        |
-| `zkey`     | •        | •        | •       | •          | —        |
+| `msiz`     | •        | •        |         |            |          |
+| `opts`     | •        | •        | •       | •          |          |
+| `pccap`    |          | •        |         | •          |          |
+| `psiz`     |          | •        |         | •          |          |
+| `rcomp`    |          | •        |         | •          |          |
+| `zcomp`    | •        | •        | •       | •          |          |
+| `zkey`     | •        | •        | •       | •          |          |
 
 ## What storage to choose
 
