@@ -24,6 +24,7 @@ To store messages Burlesque uses [Kyoto Cabinet](http://fallabs.com/kyotocabinet
 * [API](#api)
   * [Publish](#publish)
   * [Subscribe](#subscribe)
+  * [Flush](#flush)
   * [Status](#status)
   * [Debug](#debug)
 
@@ -193,7 +194,8 @@ In case of success, server will respond with status 200 and `OK` message. Otherw
 
 #### Example
 ```bash
-curl '127.0.0.1:4401/publish?queue=urgent' -d 'Process this message as soon as possible!'
+$ curl '127.0.0.1:4401/publish?queue=urgent' -d \
+  'Process this message as soon as possible!'
 ```
 Response
 ```
@@ -208,11 +210,34 @@ Subscription is always done via `GET` method. To fetch a message from a queue us
 
 #### Example
 ```bash
-curl '127.0.0.1:4401/subscribe?queues=urgent,someday'
+$ curl '127.0.0.1:4401/subscribe?queues=urgent,someday'
 ```
 Response
 ```
 Process this message as soon as possible!
+```
+
+## Flush
+
+This endpoint is used to fetch all messages from all of the given queues. All messages are encoded into a single JSON document.
+
+#### Example
+```bash
+$ curl '127.0.0.1:4401/flush?queues=urgent,someday' > dump.json
+$ cat dump.json
+```
+Result
+```json
+[
+    {
+        "queue": "urgent",
+        "message": "Process this message as soon as possible!"
+    },
+    {
+        "queue": "someday",
+        "message": "Process this message in your spare time"
+    }
+]
 ```
 
 ## Status
@@ -221,7 +246,7 @@ This endpoint is used to display information about the queues, their messages an
 
 #### Example
 ```bash
-curl 127.0.0.1:4401/status
+$ curl '127.0.0.1:4401/status'
 ```
 Response
 ```json
@@ -243,7 +268,7 @@ This endpoint is used to display debug information about Burlesque process. Curr
 
 #### Example
 ```bash
-curl 127.0.0.1:4401/debug
+$ curl '127.0.0.1:4401/debug'
 ```
 Response
 ```json
