@@ -75,11 +75,8 @@ func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
-	result := make(chan hub.Result)
 	queues := strings.Split(r.FormValue("queues"), ",")
-
-	sub := hub.NewSubscription(queues, result)
-	defer sub.Close()
+	sub := hub.NewSubscription(queues)
 
 	finished := make(chan struct{})
 	defer close(finished)
@@ -88,14 +85,15 @@ func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		select {
 		case <-disconnected:
-			sub.Close()
 		case <-finished:
 		}
+		sub.Close()
 	}()
 
 	go s.hub.Sub(sub)
-	res := <-result
 
-	w.Header().Set("Queue", res.Queue)
-	w.Write(res.Message)
+	if res, ok := <-sub.Result(); ok {
+		w.Header().Set("Queue", res.Queue)
+		w.Write(res.Message)
+	}
 }
