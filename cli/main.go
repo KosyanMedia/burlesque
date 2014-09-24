@@ -109,8 +109,24 @@ func main() {
 			Name:  "debug",
 			Usage: "Show server debug info",
 			Action: func(c *cli.Context) {
-				info := bsq.Status()
-				fmt.Println(info)
+				info := bsq.Debug()
+
+				fmt.Println("Burlesque version", info.Version)
+				fmt.Println("\nGOMAXPROCS:", info.Gomaxprocs)
+				fmt.Println("Goroutines:", info.Goroutines)
+				fmt.Println("\nKyoto Cabinet status")
+
+				max := 0
+				for k, _ := range info.KyotoCabinet {
+					if len(k) > max {
+						max = len(k)
+					}
+				}
+				format := fmt.Sprintf("%%-%ds %%v\n", max+1)
+
+				for k, v := range info.KyotoCabinet {
+					fmt.Printf(format, fmt.Sprintf("%s:", k), v)
+				}
 			},
 		},
 	}
