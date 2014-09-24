@@ -127,37 +127,37 @@ The table below describes support of these parameters by the **in-memory** datab
 
 | Parameter  | `ProtoHashDB` | `ProtoTreeDB` | `StashDB` | `CacheDB` | `GrassDB` |
 | ---------- | :-----------: | :-----------: | :-------: | :-------: | :-------: |
-| `bnum`     | —             | —             | **Yes**   | **Yes**   | **Yes**   |
-| `capcnt`   | —             | —             | —         | **Yes**   | —         |
-| `capsiz`   | —             | —             | —         | **Yes**   | —         |
-| `log`      | **Yes**       | **Yes**       | **Yes**   | **Yes**   | **Yes**   |
-| `logkinds` | **Yes**       | **Yes**       | **Yes**   | **Yes**   | **Yes**   |
-| `logpx`    | **Yes**       | **Yes**       | **Yes**   | **Yes**   | **Yes**   |
-| `opts`     | —             | —             | —         | **Yes**   | **Yes**   |
-| `pccap`    | —             | —             | —         | —         | **Yes**   |
-| `psiz`     | —             | —             | —         | —         | **Yes**   |
-| `rcomp`    | —             | —             | —         | —         | **Yes**   |
-| `zcomp`    | —             | —             | —         | **Yes**   | **Yes**   |
-| `zkey`     | —             | —             | —         | **Yes**   | **Yes**   |
+| `bnum`     | —             | —             | •         | •         | •         |
+| `capcnt`   | —             | —             | —         | •         | —         |
+| `capsiz`   | —             | —             | —         | •         | —         |
+| `log`      | •             | •             | •         | •         | •         |
+| `logkinds` | •             | •             | •         | •         | •         |
+| `logpx`    | •             | •             | •         | •         | •         |
+| `opts`     | —             | —             | —         | •         | •         |
+| `pccap`    | —             | —             | —         | —         | •         |
+| `psiz`     | —             | —             | —         | —         | •         |
+| `rcomp`    | —             | —             | —         | —         | •         |
+| `zcomp`    | —             | —             | —         | •         | •         |
+| `zkey`     | —             | —             | —         | •         | •         |
 
 The table below describes support of these parameters by the **persistent** database types.
 
 | Parameter  | `HashDB` | `TreeDB` | `DirDB` | `ForestDB` | `TextDB` |
 | ---------- | :------: | :------: | :-----: | :--------: | :------: |
-| `apow`     | **Yes**  | **Yes**  | —       | —          | —        |
-| `bnum`     | **Yes**  | **Yes**  | —       | —          | —        |
-| `dfunit`   | **Yes**  | **Yes**  | —       | —          | —        |
-| `fpow`     | **Yes**  | **Yes**  | —       | —          | —        |
-| `log`      | **Yes**  | **Yes**  | **Yes** | **Yes**    | **Yes**  |
-| `logkinds` | **Yes**  | **Yes**  | **Yes** | **Yes**    | **Yes**  |
-| `logpx`    | **Yes**  | **Yes**  | **Yes** | **Yes**    | **Yes**  |
-| `msiz`     | **Yes**  | **Yes**  | —       | —          | —        |
-| `opts`     | **Yes**  | **Yes**  | **Yes** | **Yes**    | —        |
-| `pccap`    | —        | **Yes**  | —       | **Yes**    | —        |
-| `psiz`     | —        | **Yes**  | —       | **Yes**    | —        |
-| `rcomp`    | —        | **Yes**  | —       | **Yes**    | —        |
-| `zcomp`    | **Yes**  | **Yes**  | **Yes** | **Yes**    | —        |
-| `zkey`     | **Yes**  | **Yes**  | **Yes** | **Yes**    | —        |
+| `apow`     | •        | •        | —       | —          | —        |
+| `bnum`     | •        | •        | —       | —          | —        |
+| `dfunit`   | •        | •        | —       | —          | —        |
+| `fpow`     | •        | •        | —       | —          | —        |
+| `log`      | •        | •        | •       | •          | •        |
+| `logkinds` | •        | •        | •       | •          | •        |
+| `logpx`    | •        | •        | •       | •          | •        |
+| `msiz`     | •        | •        | —       | —          | —        |
+| `opts`     | •        | •        | •       | •          | —        |
+| `pccap`    | —        | •        | —       | •          | —        |
+| `psiz`     | —        | •        | —       | •          | —        |
+| `rcomp`    | —        | •        | —       | •          | —        |
+| `zcomp`    | •        | •        | •       | •          | —        |
+| `zkey`     | •        | •        | •       | •          | —        |
 
 ## What storage to choose
 
@@ -189,7 +189,7 @@ This endpoint is used to publish messages to a queue. If there is a connection w
 
 Publication can be done via both `GET` and `POST` methods. Both methods use `queue` argument to pass queue name. When using `GET` method pass message body with `msg` argument. To publish a message via `POST` method pass message body via request body instead of the `msg` argument.
 
-In case of success, server will respond with status 200 and `OK` message. Otherwise, there will be status 500 and `FAIL` message. 
+In case of success, server will respond with status 200 and `OK` message. Otherwise, there will be status 500 and `FAIL` message.
 
 #### Example
 ```bash
