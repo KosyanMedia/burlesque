@@ -3,7 +3,7 @@ package hub
 type (
 	Subscription struct {
 		Queues []string
-		result chan<- Result
+		result chan Result
 		done   chan struct{}
 	}
 	Result struct {
@@ -12,10 +12,10 @@ type (
 	}
 )
 
-func NewSubscription(queues []string, result chan<- Result) *Subscription {
+func NewSubscription(queues []string) *Subscription {
 	return &Subscription{
 		Queues: queues,
-		result: result,
+		result: make(chan Result),
 		done:   make(chan struct{}),
 	}
 }
@@ -47,10 +47,15 @@ func (s *Subscription) Send(res Result) bool {
 	return <-success
 }
 
+func (s *Subscription) Result() <-chan Result {
+	return s.result
+}
+
 func (s *Subscription) Done() <-chan struct{} {
 	return s.done
 }
 
 func (s *Subscription) Close() {
 	close(s.done)
+	close(s.result)
 }
