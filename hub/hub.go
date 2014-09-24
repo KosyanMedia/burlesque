@@ -54,9 +54,7 @@ func (h *Hub) Sub(s *Subscription) {
 		}
 	}
 
-	h.lock.Lock()
 	h.subscribers = append(h.subscribers, s)
-	h.lock.Unlock()
 }
 
 func (h *Hub) Info() map[string]map[string]uint {
