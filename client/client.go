@@ -39,6 +39,7 @@ type (
 	}
 	DebugInfo struct {
 		Version      string                 `json:"version"`
+		Gomaxprocs   int                    `json:"gomaxprocs"`
 		Goroutines   int                    `json:"goroutines"`
 		KyotoCabinet map[string]interface{} `json:"kyoto_cabinet"`
 	}
@@ -158,7 +159,7 @@ func (c *Client) Debug() *DebugInfo {
 		return nil
 	}
 
-	dbg := DebugInfo{}
+	var dbg DebugInfo
 	if err := json.Unmarshal(body, &dbg); err != nil {
 		return nil
 	}
