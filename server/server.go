@@ -48,7 +48,7 @@ func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
 	info := s.hub.Info()
 	jsn, _ := json.Marshal(info)
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsn)
 }
 
@@ -60,7 +60,7 @@ func (s *Server) debugHandler(w http.ResponseWriter, r *http.Request) {
 	info["kyoto_cabinet"] = s.hub.StorageInfo()
 	jsn, _ := json.Marshal(info)
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsn)
 }
 
@@ -107,6 +107,6 @@ func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
 	messages := s.hub.Flush(queues)
 	jsn, _ := json.Marshal(messages)
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsn)
 }
