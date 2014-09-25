@@ -65,18 +65,16 @@ func (h *Hub) Sub(s *Subscription) {
 	h.subscribers = append(h.subscribers, s)
 }
 
-func (h *Hub) Flush(queues []string) (messages []MessageDump) {
+func (h *Hub) Flush(queues []string) []MessageDump {
+	messages := []MessageDump{}
+
 	for _, queue := range queues {
 		for _, msg := range h.storage.Flush(queue) {
 			messages = append(messages, MessageDump{queue, string(msg)})
 		}
 	}
 
-	if messages == nil {
-		messages = []MessageDump{}
-	}
-
-	return
+	return messages
 }
 
 func (h *Hub) Info() map[string]map[string]uint {
@@ -96,7 +94,7 @@ func (h *Hub) Info() map[string]map[string]uint {
 			if _, ok := info[queue]["subscriptions"]; !ok {
 				info[queue]["subscriptions"] = 0
 			}
-			info[queue]["subscriptions"] += 1
+			info[queue]["subscriptions"]++
 		}
 	}
 
