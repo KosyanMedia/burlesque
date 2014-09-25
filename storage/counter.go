@@ -22,11 +22,11 @@ type (
 	}
 )
 
-func newCounter(wi, ri uint) (c *counter) {
+func newCounter(wi, ri uint) *counter {
 	m := &sync.Mutex{}
 	m.Lock()
 
-	c = &counter{
+	c := &counter{
 		write:     wi,
 		read:      ri,
 		stream:    make(chan uint),
@@ -35,7 +35,7 @@ func newCounter(wi, ri uint) (c *counter) {
 
 	go c.increment()
 
-	return
+	return c
 }
 
 func (c *counter) tryWrite(fn func(i uint) bool) {

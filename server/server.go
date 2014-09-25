@@ -47,6 +47,8 @@ func (s *Server) Start() {
 func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
 	info := s.hub.Info()
 	jsn, _ := json.Marshal(info)
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsn)
 }
 
@@ -56,8 +58,9 @@ func (s *Server) debugHandler(w http.ResponseWriter, r *http.Request) {
 	info["gomaxprocs"] = runtime.GOMAXPROCS(-1)
 	info["goroutines"] = runtime.NumGoroutine()
 	info["kyoto_cabinet"] = s.hub.StorageInfo()
-
 	jsn, _ := json.Marshal(info)
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsn)
 }
 
@@ -102,7 +105,8 @@ func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
 	queues := strings.Split(r.FormValue("queues"), ",")
 	messages := s.hub.Flush(queues)
-
 	jsn, _ := json.Marshal(messages)
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsn)
 }
