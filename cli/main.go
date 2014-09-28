@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -86,6 +87,18 @@ func main() {
 					fmt.Println(string(msg.Body))
 				} else {
 					fmt.Printf("Failed to recieve message from queues %s\n", strings.Join(c.Args(), ", "))
+				}
+			},
+		},
+		{
+			Name:  "flush",
+			Usage: "Flush all messages from given queues",
+			Action: func(c *cli.Context) {
+				if msgs := bsq.Flush(c.Args()...); msgs != nil {
+					jsn, _ := json.Marshal(msgs)
+					fmt.Println(string(jsn))
+				} else {
+					fmt.Printf("Failed to flush queues %s\n", strings.Join(c.Args(), ", "))
 				}
 			},
 		},
