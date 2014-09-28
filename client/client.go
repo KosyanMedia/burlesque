@@ -103,32 +103,33 @@ func (c *Client) Subscribe(queues ...string) *Message {
 	}
 }
 
-func (c *Client) Flush(queues ...string) (messages []*Message) {
+func (c *Client) Flush(queues ...string) []*Message {
 	url := c.url(flushEndpoint, "?queues=", strings.Join(queues, ","))
 	_, body := c.get(url)
 
 	var tmp []map[string]string
 	if err := json.Unmarshal(body, &tmp); err != nil {
-		return
+		return nil
 	}
 
-	messages = []*Message{}
+	messages := []*Message{}
 	for _, msg := range tmp {
 		messages = append(messages, &Message{msg["queue"], []byte(msg["message"])})
 	}
 
-	return
+	return messages
 }
 
-func (c *Client) Status() (stat []*QueueInfo) {
+func (c *Client) Status() []*QueueInfo {
 	url := c.url(statusEndpoit)
 	_, body := c.get(url)
 
 	tmp := make(map[string]map[string]int)
 	if err := json.Unmarshal(body, &tmp); err != nil {
-		return
+		return nil
 	}
 
+	stat := []*QueueInfo{}
 	for queue, info := range tmp {
 		qi := &QueueInfo{
 			Name:        queue,
@@ -138,7 +139,7 @@ func (c *Client) Status() (stat []*QueueInfo) {
 		stat = append(stat, qi)
 	}
 
-	return
+	return stat
 }
 
 func (c *Client) Debug() *DebugInfo {
