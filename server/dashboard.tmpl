@@ -12,26 +12,23 @@
 .title, td, th {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1.3em;
-    padding: 10px;
+    padding: 0.6em;
     font-weight: 300;
 }
 
-.title {
+.title, table {
     position: absolute;
-    top: 10px;
     left: 50%;
-    width: 600px;
-    margin-left: -300px;
+    width: 650px;
+    margin-left: -325px;
+}
+.title {
+    top: 10px;
     text-align: center;
     font-size: 1.8em;
-    font-weight: 300;
 }
 table {
-    position: absolute;
     top: 100px;
-    left: 50%;
-    width: 600px;
-    margin-left: -300px;
     border-spacing: 0;
     border-collapse: collapse;
 }
@@ -45,8 +42,8 @@ tbody tr:nth-child(even) {
     background-color: #f5f5f5;
 }
 .name {
-    width: 300px;
-    max-width: 300px;
+    width: 350px;
+    max-width: 350px;
     text-align: left;
     overflow: hidden;
     white-space: nowrap;
@@ -55,14 +52,9 @@ tbody tr:nth-child(even) {
 .messages, .subscriptions {
     width: 150px;
     max-width: 150px;
-    font-weight: 400;
     text-align: right;
 }
-#placeholder td {
-    text-align: center;
-}
 .zero {
-    font-weight: 300;
     color: #aaa;
 }
 .fat {
@@ -71,6 +63,17 @@ tbody tr:nth-child(even) {
 .hot {
     font-weight: 600;
     color: #f20;
+}
+#loading {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.5em;
+    width: auto;
+}
+#placeholder td {
+    text-align: center;
 }
 
 </style>
@@ -93,17 +96,22 @@ tbody tr:nth-child(even) {
             <td colspan="3">Loading queues...</td>
         </tr>
     </tbody>
+    <div id="loading">Loading...</div>
 </table>
 
 <script type="text/javascript">
 
 function loadStatus(callback) {
-    var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest(),
+        loading = document.getElementById('loading');
+
+    loading.setAttribute('style', 'display: block;');
     xhr.open('GET', '/status', true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 var queues = JSON.parse(xhr.responseText);
+                loading.setAttribute('style', 'display: none;');
                 callback(queues);
             }
         }
@@ -129,37 +137,39 @@ function updateDashboard(queues) {
         if (!tr) {
             tr = document.createElement('tr');
             tr.setAttribute('id', id);
-            for (var i = 0; i < 3; i++) {
-                tr.appendChild(document.createElement('td'));
-            }
+
+            var nameCol = document.createElement('td');
+            nameCol.appendChild(document.createTextNode(queue));
+            tr.appendChild(nameCol);
+            tr.appendChild(document.createElement('td'));
+            tr.appendChild(document.createElement('td'));
+
             queuesList.appendChild(tr);
         }
 
-        var nmsg = parseInt(meta.messages, 10),
-            nsub = parseInt(meta.subscriptions, 10),
-            cols = tr.getElementsByTagName('td'),
+
+        var cols = tr.getElementsByTagName('td'),
             nameCol = cols[0],
             messagesCol = cols[1],
             subscriptionsCol = cols[2];
 
-        nameCol.setAttribute('class', 'name');
-        nameCol.innerHTML = queue;
         messagesCol.innerHTML = meta.messages;
         subscriptionsCol.innerHTML = meta.subscriptions;
 
-        if (nmsg > hotThreshold) {
+        if (meta.messages > hotThreshold) {
             nameCol.setAttribute('class', 'name hot');
             messagesCol.setAttribute('class', 'messages hot');
-        } else if (nmsg > fatThreshold) {
+        } else if (meta.messages > fatThreshold) {
             nameCol.setAttribute('class', 'name fat');
             messagesCol.setAttribute('class', 'messages fat');
-        } else if (nmsg === 0) {
+        } else if (meta.messages === 0) {
             messagesCol.setAttribute('class', 'messages zero');
         } else {
+            nameCol.setAttribute('class', 'name');
             messagesCol.setAttribute('class', 'messages');
         }
 
-        if (nsub === 0) {
+        if (meta.subscriptions === 0) {
             subscriptionsCol.setAttribute('class', 'subscriptions zero');
         } else {
             subscriptionsCol.setAttribute('class', 'subscriptions');
