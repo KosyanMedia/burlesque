@@ -11,45 +11,43 @@
 * { box-sizing: border-box; }
 .title, td, th {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.8em;
+    font-size: 1.3em;
     padding: 10px;
+    font-weight: 300;
 }
 
 .title {
     position: absolute;
-    top: 0;
+    top: 10px;
     left: 50%;
-    width: 500px;
-    margin-left: -250px;
+    width: 600px;
+    margin-left: -300px;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.8em;
     font-weight: 300;
 }
 table {
     position: absolute;
-    top: 80px;
+    top: 100px;
     left: 50%;
-    width: 500px;
-    margin-left: -250px;
+    width: 600px;
+    margin-left: -300px;
     border-spacing: 0;
     border-collapse: collapse;
 }
 th {
-    font-weight: 600;
-    color: #fff;
+    font-weight: 400;
 }
 thead tr {
-    background-color: #8a2be2;
+    border-bottom: #666 1px solid;
 }
 tbody tr:nth-child(even) {
     background-color: #f5f5f5;
 }
-tbody tr:nth-child(odd) {
-    background-color: #fefefe;
-}
 .name {
-    width: 200px;
-    max-width: 200px;
+    width: 300px;
+    max-width: 300px;
+    text-align: left;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -57,17 +55,22 @@ tbody tr:nth-child(odd) {
 .messages, .subscriptions {
     width: 150px;
     max-width: 150px;
+    font-weight: 400;
     text-align: right;
 }
-.placeholder td {
+#placeholder td {
     text-align: center;
 }
 .zero {
+    font-weight: 300;
     color: #aaa;
 }
-.hot {
-    color: #f20;
+.fat {
     font-weight: 600;
+}
+.hot {
+    font-weight: 600;
+    color: #f20;
 }
 
 </style>
@@ -111,6 +114,7 @@ function loadStatus(callback) {
 function updateDashboard(queues) {
     var queuesList = document.getElementById('queues'),
         placeholder = document.getElementById('placeholder'),
+        fatThreshold = 100,
         hotThreshold = 1000;
 
     if (placeholder) {
@@ -131,36 +135,41 @@ function updateDashboard(queues) {
             queuesList.appendChild(tr);
         }
 
-        var cols = tr.getElementsByTagName('td');
-        cols[0].innerHTML = queue;
-        cols[1].innerHTML = meta.messages;
-        cols[2].innerHTML = meta.subscriptions;
+        var nmsg = parseInt(meta.messages, 10),
+            nsub = parseInt(meta.subscriptions, 10),
+            cols = tr.getElementsByTagName('td'),
+            nameCol = cols[0],
+            messagesCol = cols[1],
+            subscriptionsCol = cols[2];
 
-        if (parseInt(meta.messages, 10) > hotThreshold) {
-            cols[0].setAttribute('class', 'name hot');
+        nameCol.setAttribute('class', 'name');
+        nameCol.innerHTML = queue;
+        messagesCol.innerHTML = meta.messages;
+        subscriptionsCol.innerHTML = meta.subscriptions;
+
+        if (nmsg > hotThreshold) {
+            nameCol.setAttribute('class', 'name hot');
+            messagesCol.setAttribute('class', 'messages hot');
+        } else if (nmsg > fatThreshold) {
+            nameCol.setAttribute('class', 'name fat');
+            messagesCol.setAttribute('class', 'messages fat');
+        } else if (nmsg === 0) {
+            messagesCol.setAttribute('class', 'messages zero');
         } else {
-            cols[0].setAttribute('class', 'name');
+            messagesCol.setAttribute('class', 'messages');
         }
 
-        if (parseInt(meta.messages, 10) === 0) {
-            cols[1].setAttribute('class', 'messages zero');
-        } else if (parseInt(meta.messages, 10) > hotThreshold) {
-            cols[1].setAttribute('class', 'messages hot');
+        if (nsub === 0) {
+            subscriptionsCol.setAttribute('class', 'subscriptions zero');
         } else {
-            cols[1].setAttribute('class', 'messages');
-        }
-
-        if (parseInt(meta.subscriptions, 10) === 0) {
-            cols[2].setAttribute('class', 'subscriptions zero');
-        } else {
-            cols[2].setAttribute('class', 'subscriptions');
+            subscriptionsCol.setAttribute('class', 'subscriptions');
         }
     }
 }
 
 function loop(timeout, func) {
+    func();
     window.setTimeout(function(){
-        func();
         loop(timeout, func);
     }, timeout);
 }
