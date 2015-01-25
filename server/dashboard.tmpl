@@ -1,0 +1,170 @@
+{{define "dashboard"}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Burlesque v{{.version}}</title>
+    <meta charset="utf8">
+
+<style type="text/css">
+
+* { box-sizing: border-box; }
+.title, td, th {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 0.8em;
+    padding: 10px;
+}
+
+.title {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 500px;
+    margin-left: -250px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 300;
+}
+table {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    width: 500px;
+    margin-left: -250px;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+th {
+    font-weight: 600;
+    color: #fff;
+}
+thead tr {
+    background-color: #8a2be2;
+}
+tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+tbody tr:nth-child(odd) {
+    background-color: #fefefe;
+}
+.name {
+    width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.messages, .subscriptions {
+    width: 150px;
+    max-width: 150px;
+    text-align: right;
+}
+.placeholder td {
+    text-align: center;
+}
+.zero {
+    color: #aaa;
+}
+.hot {
+    color: #f20;
+    font-weight: 600;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1 class="title">Burlesque v{{.version}} at {{.hostname}}</h1>
+
+<table class="stats">
+    <thead>
+        <tr>
+            <th class="name">Queue</th>
+            <th class="messages">Messages</th>
+            <th class="subscriptions">Subscriptions</th>
+        </tr>
+    </thead>
+    <tbody id="queues">
+        <tr id="placeholder">
+            <td colspan="3">Loading queues...</td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+function loadStatus(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/status', true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var queues = JSON.parse(xhr.responseText);
+                callback(queues);
+            }
+        }
+    };
+    xhr.send(null);
+}
+
+function updateDashboard(queues) {
+    var queuesList = document.getElementById('queues'),
+        placeholder = document.getElementById('placeholder'),
+        hotThreshold = 1000;
+
+    if (placeholder) {
+        queuesList.removeChild(placeholder);
+    }
+
+    for (queue in queues) {
+        var meta = queues[queue],
+            id = 'queue_' + queue,
+            tr = document.getElementById(id);
+
+        if (!tr) {
+            tr = document.createElement('tr');
+            tr.setAttribute('id', id);
+            for (var i = 0; i < 3; i++) {
+                tr.appendChild(document.createElement('td'));
+            }
+            queuesList.appendChild(tr);
+        }
+
+        var cols = tr.getElementsByTagName('td');
+        cols[0].innerHTML = queue;
+        cols[1].innerHTML = meta.messages;
+        cols[2].innerHTML = meta.subscriptions;
+
+        if (parseInt(meta.messages, 10) > hotThreshold) {
+            cols[0].setAttribute('class', 'name hot');
+        } else {
+            cols[0].setAttribute('class', 'name');
+        }
+
+        if (parseInt(meta.messages, 10) === 0) {
+            cols[1].setAttribute('class', 'messages zero');
+        } else if (parseInt(meta.messages, 10) > hotThreshold) {
+            cols[1].setAttribute('class', 'messages hot');
+        } else {
+            cols[1].setAttribute('class', 'messages');
+        }
+
+        if (parseInt(meta.subscriptions, 10) === 0) {
+            cols[2].setAttribute('class', 'subscriptions zero');
+        } else {
+            cols[2].setAttribute('class', 'subscriptions');
+        }
+    }
+}
+
+window.setInterval(function(){
+    loadStatus(updateDashboard);
+}, 1000);
+
+</script>
+
+</body>
+</html>
+
+{{end}}

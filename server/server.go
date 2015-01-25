@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
+	"text/template"
 
 	"github.com/KosyanMedia/burlesque/hub"
 )
@@ -19,7 +21,7 @@ type (
 )
 
 const (
-	Version = "0.2.0"
+	Version = "1.1.0"
 )
 
 func New(port int, h *hub.Hub) *Server {
@@ -33,6 +35,7 @@ func New(port int, h *hub.Hub) *Server {
 	http.HandleFunc("/publish", s.pubHandler)
 	http.HandleFunc("/subscribe", s.subHandler)
 	http.HandleFunc("/flush", s.flushHandler)
+	http.HandleFunc("/dashboard", s.dashboardHandler)
 
 	return &s
 }
@@ -109,4 +112,22 @@ func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsn)
+}
+
+func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("server/dashboard.tmpl")
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf8")
+	hostname, _ := os.Hostname()
+	if hostname == "" {
+		hostname = "Unknown Host"
+	}
+
+	tmpl.ExecuteTemplate(w, "dashboard", map[string]interface{}{
+		"version":  Version,
+		"hostname": hostname,
+	})
 }
