@@ -158,9 +158,16 @@ function updateDashboard(queues) {
     }
 }
 
-window.setInterval(function(){
+function loop(timeout, func) {
+    window.setTimeout(function(){
+        func();
+        loop(timeout, func);
+    }, timeout);
+}
+
+loop(1000, function(){
     loadStatus(updateDashboard);
-}, 1000);
+});
 
 </script>
 
