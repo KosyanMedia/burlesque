@@ -27,6 +27,7 @@ To store messages Burlesque uses [Kyoto Cabinet](http://fallabs.com/kyotocabinet
   * [Flush](#flush)
   * [Status](#status)
   * [Debug](#debug)
+* [Dashboard](#dashboard)
 
 ## Installation
 
@@ -54,8 +55,8 @@ The following arguments are supported by the `burlesque` executable:
 #### Example
 
 ```bash
-wget -O burlesque.zip https://github.com/KosyanMedia/burlesque/archive/1.0.0.zip
-unzip burlesque.zip
+wget https://github.com/KosyanMedia/burlesque/releases/download/v1.1.0/burlesque1.1.0.linux-amd64.zip
+unzip burlesque1.1.0.linux-amd64.zip
 ./burlesque
 ```
 
@@ -191,11 +192,14 @@ Publication can be done via both `GET` and `POST` methods. Both methods use `que
 In case of success, server will respond with status 200 and `OK` message. Otherwise, there will be status 500 and `FAIL` message.
 
 #### Example
+
 ```bash
 $ curl '127.0.0.1:4401/publish?queue=urgent' -d \
   'Process this message as soon as possible!'
 ```
+
 Response
+
 ```
 OK
 ```
@@ -207,10 +211,13 @@ This endpoint is used to try and fetch a message from one of the queues given. I
 Subscription is always done via `GET` method. To fetch a message from a queue use the name of the queue as the `queues` argument value. Multiple queue names could be passed separated with the comma character.
 
 #### Example
+
 ```bash
 $ curl '127.0.0.1:4401/subscribe?queues=urgent,someday'
 ```
+
 Response
+
 ```
 Process this message as soon as possible!
 ```
@@ -220,11 +227,14 @@ Process this message as soon as possible!
 This endpoint is used to fetch all messages from all of the given queues. All messages are encoded into a single JSON document.
 
 #### Example
+
 ```bash
 $ curl '127.0.0.1:4401/flush?queues=urgent,someday' > dump.json
 $ cat dump.json
 ```
+
 Result
+
 ```json
 [
     {
@@ -243,18 +253,33 @@ Result
 This endpoint is used to display information about the queues, their messages and current subscriptions encoded in JSON format.
 
 #### Example
+
 ```bash
 $ curl '127.0.0.1:4401/status'
 ```
+
 Response
+
 ```json
 {
-    "urgent": {
+    "empty": {
         "messages": 0,
+        "subscriptions": 1
+    },
+    "log": {
+        "messages": 311307,
         "subscriptions": 0
     },
-    "someday": {
-        "messages": 0,
+    "messages": {
+        "messages": 20,
+        "subscriptions": 0
+    },
+    "temp": {
+        "messages": 12,
+        "subscriptions": 0
+    },
+    "urgent": {
+        "messages": 129,
         "subscriptions": 0
     }
 }
@@ -265,21 +290,46 @@ Response
 This endpoint is used to display debug information about Burlesque process. Currenty displays the number of goroutines only.
 
 #### Example
+
 ```bash
 $ curl '127.0.0.1:4401/debug'
 ```
+
 Response
+
 ```json
 {
     "gomaxprocs": 1,
-    "goroutines": 12,
+    "goroutines": 18,
     "kyoto_cabinet": {
-        "count": 0,
-        "path": "-",
-        "realtype": 16,
-        "size": 0,
-        "type": 16
+        "apow": 3,
+        "bnum": 1048583,
+        "chksum": 188,
+        "count": 502099,
+        "dfunit": 0,
+        "flags": 1,
+        "fmtver": 5,
+        "fpow": 10,
+        "frgcnt": 1,
+        "librev": 13,
+        "libver": 16,
+        "msiz": 67108864,
+        "opts": 0,
+        "path": "/tmp/demo.kch",
+        "realsize": 25580432,
+        "realtype": 48,
+        "recovered": 0,
+        "reorganized": 0,
+        "size": 25580432,
+        "trimmed": 0,
+        "type": 48
     },
-    "version": "0.2.0"
+    "version": "1.1.0"
 }
 ```
+
+## Dashboard
+
+Dashboard is available at `http://127.0.0.1:4401/dashboard`.
+
+<img src="https://raw.githubusercontent.com/KosyanMedia/burlesque/master/dashboard.png" width="693">
