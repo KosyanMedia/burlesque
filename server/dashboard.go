@@ -128,7 +128,10 @@ function updateDashboard(queues) {
         fatThreshold = 100,
         hotThreshold = 1000;
 
-    if (placeholder) {
+    if (Object.keys(queues).length === 0) {
+        var td = placeholder.getElementsByTagName('td')[0];
+        td.innerHTML = 'Empty';
+    } else if (placeholder) {
         queuesList.removeChild(placeholder);
     }
 
@@ -149,7 +152,6 @@ function updateDashboard(queues) {
 
             queuesList.appendChild(tr);
         }
-
 
         var cols = tr.getElementsByTagName('td'),
             nameCol = cols[0],
