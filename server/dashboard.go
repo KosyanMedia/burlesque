@@ -158,8 +158,8 @@ function updateDashboard(queues) {
             messagesCol = cols[1],
             subscriptionsCol = cols[2];
 
-        messagesCol.innerHTML = meta.messages;
-        subscriptionsCol.innerHTML = meta.subscriptions;
+        messagesCol.innerHTML = Number(meta.messages).toLocaleString();
+        subscriptionsCol.innerHTML = Number(meta.subscriptions).toLocaleString();
 
         if (meta.messages > hotThreshold) {
             nameCol.setAttribute('class', 'name hot');
