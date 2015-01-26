@@ -115,10 +115,8 @@ func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("server/dashboard.tmpl")
-	if err != nil {
-		panic(err)
-	}
+	tmpl := template.New("dashboard")
+	tmpl, _ = tmpl.Parse(dashboardTmpl)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf8")
 	hostname, _ := os.Hostname()

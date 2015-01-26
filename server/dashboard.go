@@ -1,3 +1,6 @@
+package server
+
+const dashboardTmpl = `
 {{define "dashboard"}}
 
 <!DOCTYPE html>
@@ -194,3 +197,4 @@ loop(1000, function(){
 </html>
 
 {{end}}
+`
