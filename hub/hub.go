@@ -37,6 +37,7 @@ func New(st *storage.Storage) *Hub {
 func (h *Hub) Pub(queue string, msg []byte) bool {
 	for _, s := range h.subscribers {
 		if ok := s.Need(queue); ok {
+			// Check if subscription is already served
 			select {
 			case <-s.Done():
 				continue
@@ -77,11 +78,11 @@ func (h *Hub) Flush(queues []string) []MessageDump {
 	return messages
 }
 
-func (h *Hub) Info() map[string]map[string]uint {
-	info := make(map[string]map[string]uint)
+func (h *Hub) Info() map[string]map[string]int64 {
+	info := make(map[string]map[string]int64)
 
 	for queue, size := range h.storage.QueueSizes() {
-		info[queue] = map[string]uint{
+		info[queue] = map[string]int64{
 			"messages":      size,
 			"subscriptions": 0,
 		}
@@ -89,7 +90,7 @@ func (h *Hub) Info() map[string]map[string]uint {
 	for _, sub := range h.subscribers {
 		for _, queue := range sub.Queues {
 			if _, ok := info[queue]; !ok {
-				info[queue] = map[string]uint{"messages": 0}
+				info[queue] = map[string]int64{"messages": 0}
 			}
 			if _, ok := info[queue]["subscriptions"]; !ok {
 				info[queue]["subscriptions"] = 0

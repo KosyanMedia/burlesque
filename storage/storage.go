@@ -43,7 +43,7 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
 		return
 	}
 
-	var index uint
+	var index int64
 	select {
 	case index = <-s.counters[queue].stream:
 	case <-done:
@@ -68,7 +68,7 @@ func (s *Storage) Put(queue string, message []byte) (err error) {
 		s.counters[queue] = newCounter(0, 0)
 	}
 
-	s.counters[queue].tryWrite(func(index uint) bool {
+	s.counters[queue].tryWrite(func(index int64) bool {
 		key := makeKey(queue, index)
 		err = s.kyoto.Set(key, message)
 
@@ -92,8 +92,8 @@ func (s *Storage) Flush(queue string) (messages [][]byte) {
 	return
 }
 
-func (s *Storage) QueueSizes() map[string]uint {
-	info := make(map[string]uint)
+func (s *Storage) QueueSizes() map[string]int64 {
+	info := make(map[string]int64)
 
 	for queue, c := range s.counters {
 		info[queue] = c.distance()
@@ -136,9 +136,9 @@ func (s *Storage) Close() (err error) {
 // State
 
 func (s *Storage) saveState() (err error) {
-	state := make(map[string]map[string]uint)
+	state := make(map[string]map[string]int64)
 	for queue, ctr := range s.counters {
-		state[queue] = map[string]uint{
+		state[queue] = map[string]int64{
 			"wi": ctr.write,
 			"ri": ctr.read,
 		}
@@ -153,7 +153,7 @@ func (s *Storage) saveState() (err error) {
 func (s *Storage) loadState() (err error) {
 	var (
 		jsn   []byte
-		state = make(map[string]map[string]uint)
+		state = make(map[string]map[string]int64)
 	)
 
 	if jsn, err = s.kyoto.Get([]byte(stateMetaKey)); err != nil {
@@ -186,7 +186,9 @@ func (s *Storage) keepStatePersisted() {
 	}
 }
 
-func makeKey(queue string, index uint) []byte {
-	// TODO: There should be a faster way
-	return []byte(strings.Join([]string{queue, strconv.FormatUint(uint64(index), 10)}, "_"))
+func makeKey(queue string, index int64) []byte {
+	return []byte(strings.Join([]string{
+		queue,
+		strconv.FormatInt(index, 10),
+	}, "_"))
 }
