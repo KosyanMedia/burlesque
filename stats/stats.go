@@ -24,7 +24,7 @@ type (
 
 func New() *Stats {
 	s := &Stats{
-		q: map[string]*meta{},
+		queues: map[string]*meta{},
 	}
 
 	go s.loopCollectSeconds()
@@ -50,18 +50,16 @@ func (s *Stats) Rates(queue string) (in, out int64) {
 	return p.in, p.out
 }
 
-func (s *Stats) RateHistory(queue string) map[string][]int64 {
-	hist := map[string][]int64{
-		"in":  []int64{},
-		"out": []int64{},
-	}
+func (s *Stats) RateHistory(queue string) (in, out []int64) {
+	in = []int64{}
+	out = []int64{}
 
 	for _, p := range s.metaFor(queue).points {
-		hist["in"] = append(hist["in"], p.in)
-		hist["out"] = append(hist["out"], p.out)
+		in = append(in, p.in)
+		out = append(out, p.out)
 	}
 
-	return hist
+	return in, out
 }
 
 func (s *Stats) loopCollectSeconds() {

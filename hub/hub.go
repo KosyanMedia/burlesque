@@ -90,12 +90,9 @@ func (h *Hub) Info() map[string]map[string]int64 {
 	info := make(map[string]map[string]int64)
 
 	for queue, size := range h.storage.QueueSizes() {
-		inRate, outRate := h.statistics.Rates(queue)
 		info[queue] = map[string]int64{
 			"messages":      size,
 			"subscriptions": 0,
-			"in_rate":       inRate,
-			"out_rate":      outRate,
 		}
 	}
 	for _, sub := range h.subscribers {
@@ -113,13 +110,12 @@ func (h *Hub) Info() map[string]map[string]int64 {
 	return info
 }
 
-func (h *Hub) RateHistory() map[string]map[string][]int64 {
-	hist := map[string]map[string][]int64{}
-	for queue, _ := range h.storage.QueueSizes() {
-		hist[queue] = h.statistics.RateHistory(queue)
-	}
+func (h *Hub) Rates(queue string) (in, out int64) {
+	return h.statistics.Rates(queue)
+}
 
-	return hist
+func (h *Hub) RateHistory(queue string) (in, out []int64) {
+	return h.statistics.RateHistory(queue)
 }
 
 func (h *Hub) StorageInfo() map[string]interface{} {

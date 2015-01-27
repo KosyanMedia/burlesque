@@ -48,9 +48,29 @@ func (s *Server) Start() {
 }
 
 func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
-	info := s.hub.Info()
-	jsn, _ := json.Marshal(info)
+	var (
+		res       = map[string]map[string]interface{}{}
+		info      = s.hub.Info()
+		withRates = (r.FormValue("rates") != "")
+	)
 
+	for queue, meta := range info {
+		res[queue] = map[string]interface{}{}
+
+		for key, val := range meta {
+			res[queue][key] = val
+		}
+		if withRates {
+			inRate, outRate := s.hub.Rates(queue)
+			inHist, outHist := s.hub.RateHistory(queue)
+			res[queue]["in_rate"] = inRate
+			res[queue]["out_rate"] = outRate
+			res[queue]["in_rate_history"] = inHist
+			res[queue]["out_rate_history"] = outHist
+		}
+	}
+
+	jsn, _ := json.Marshal(res)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsn)
 }
