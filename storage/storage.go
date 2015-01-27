@@ -31,6 +31,8 @@ func New(path string) (s *Storage, err error) {
 		kyoto:    kyoto,
 		counters: make(map[string]*counter),
 	}
+	s.loadState()
+	go s.keepStatePersisted()
 
 	return
 }
