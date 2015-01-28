@@ -10,13 +10,15 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/GeertJohan/go.rice"
 	"github.com/KosyanMedia/burlesque/hub"
 )
 
 type (
 	Server struct {
-		port int
-		hub  *hub.Hub
+		port          int
+		hub           *hub.Hub
+		dashboardTmpl string
 	}
 )
 
@@ -30,12 +32,17 @@ func New(port int, h *hub.Hub) *Server {
 		hub:  h,
 	}
 
+	box := rice.MustFindBox("static")
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(box.HTTPBox())))
+
 	http.HandleFunc("/status", s.statusHandler)
 	http.HandleFunc("/debug", s.debugHandler)
 	http.HandleFunc("/publish", s.pubHandler)
 	http.HandleFunc("/subscribe", s.subHandler)
 	http.HandleFunc("/flush", s.flushHandler)
 	http.HandleFunc("/dashboard", s.dashboardHandler)
+
+	s.dashboardTmpl, _ = box.String("dashboard.tmpl")
 
 	return &s
 }
@@ -136,7 +143,7 @@ func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.New("dashboard")
-	tmpl, _ = tmpl.Parse(dashboardTmpl)
+	tmpl, _ = tmpl.Parse(s.dashboardTmpl)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf8")
 	hostname, _ := os.Hostname()

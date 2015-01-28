@@ -1,0 +1,29 @@
+{{define "dashboard"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Queues @ {{.hostname}}</title>
+    <meta charset="utf8">
+    <link rel="stylesheet" type="text/css" href="/static/app.css">
+</head>
+<body>
+    <h1 class="title">Burlesque v{{.version}} at {{.hostname}}</h1>
+    <table class="stats">
+        <thead>
+            <tr>
+                <th class="name">Queue</th>
+                <th class="messages">Messages</th>
+                <th class="subscriptions">Subscriptions</th>
+            </tr>
+        </thead>
+        <tbody id="queues">
+            <tr id="placeholder">
+                <td colspan="3">Loading queues...</td>
+            </tr>
+        </tbody>
+        <div id="loading">Loading...</div>
+    </table>
+    <script type="text/javascript" src="/static/app.js"></script>
+</body>
+</html>
+{{end}}
