@@ -4,26 +4,20 @@
 <head>
     <title>Queues @ {{.hostname}}</title>
     <meta charset="utf8">
-    <link rel="stylesheet" type="text/css" href="/static/app.css">
+    <link rel="stylesheet" href="/static/app.css">
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
 </head>
 <body>
     <h1 class="heading">Burlesque v{{.version}} at {{.hostname}}</h1>
-    <table class="stats">
-        <thead>
-            <tr>
-                <th class="name">Queue</th>
-                <th class="messages">Messages</th>
-                <th class="subscriptions">Subscriptions</th>
-            </tr>
-        </thead>
-        <tbody id="queues">
-            <tr id="placeholder">
-                <td colspan="3">Loading queues...</td>
-            </tr>
-        </tbody>
-        <div id="loading">Loading...</div>
-    </table>
-    <script type="text/javascript" src="/static/app.js"></script>
+    <div id="dashboard"></div>
+    <script type="text/jsx" src="/static/app.jsx"></script>
+    <script type="text/jsx">
+    React.render(
+        <Dashboard api="http://127.0.0.1:{{.port}}/status" interval={1000} />,
+        document.getElementById('dashboard')
+    );
+    </script>
 </body>
 </html>
 {{end}}

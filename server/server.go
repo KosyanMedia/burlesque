@@ -154,5 +154,6 @@ func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "dashboard", map[string]interface{}{
 		"version":  Version,
 		"hostname": hostname,
+		"port":     s.port,
 	})
 }

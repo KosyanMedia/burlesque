@@ -4,7 +4,7 @@
     font-weight: 300;
 }
 
-.heading, table {
+.heading, #dashboard {
     position: absolute;
     left: 50%;
     width: 650px;
@@ -15,8 +15,11 @@
     font-size: 1.8em;
     text-align: center;
 }
-table {
+#dashboard {
     top: 100px;
+}
+table {
+    width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
 }
@@ -31,9 +34,6 @@ th {
 thead tr {
     border-bottom: #666 1px solid;
 }
-/*tbody tr:nth-child(even) {
-    background-color: #f5f5f5;
-}*/
 .title {
     position: relative;
     width: 350px;
@@ -69,15 +69,7 @@ thead tr {
     font-weight: 600;
     color: #f20;
 }
-#loading {
-    display: none;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 0.5em;
-    width: auto;
-}
-#placeholder td {
+.placeholder {
     text-align: center;
 }
 
