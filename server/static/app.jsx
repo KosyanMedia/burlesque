@@ -87,7 +87,7 @@ var QueuesList = React.createClass({
                         <td colSpan="3" className="placeholder">Loading...</td>
                     </tr>
                 </tbody>
-            )
+            );
         }
 
         if (Object.keys(this.props.queues) === 0) {
@@ -97,7 +97,7 @@ var QueuesList = React.createClass({
                         <td colSpan="3" className="placeholder">This server has no queues</td>
                     </tr>
                 </tbody>
-            )
+            );
         }
 
         var queues = this.props.queues;
@@ -170,7 +170,7 @@ var Dashboard = React.createClass({
     },
 
     refresh: function() {
-        var xhr = new XMLHttpRequest()
+        var xhr = new XMLHttpRequest(),
             self = this;
 
         xhr.open('GET', this.props.api, true);
