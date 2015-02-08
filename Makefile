@@ -7,7 +7,7 @@ jsx: check-react
 	jsx --extension jsx server/static/ server/static/
 	rm -rf server/static/.module-cache
 
-watch:
+watch: check-react
 	jsx --watch --extension jsx server/static/ server/static/
 
 cleanup:
