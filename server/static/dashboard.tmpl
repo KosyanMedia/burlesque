@@ -6,15 +6,14 @@
     <meta charset="utf8">
     <link rel="stylesheet" href="/static/app.css">
     <script src="http://fb.me/react-0.12.2.js"></script>
-    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
+    <script src="/static/app.js"></script>
 </head>
 <body>
     <h1 class="heading">Burlesque v{{.version}} at {{.hostname}}</h1>
     <div id="dashboard"></div>
-    <script type="text/jsx" src="/static/app.jsx"></script>
-    <script type="text/jsx">
+    <script>
     React.render(
-        <Dashboard api="http://127.0.0.1:{{.port}}/status" interval={1000} />,
+        React.createElement(Dashboard, {api: "http://127.0.0.1:{{.port}}/status", interval: 1000}),
         document.getElementById('dashboard')
     );
     </script>
