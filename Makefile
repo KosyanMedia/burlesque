@@ -7,6 +7,9 @@ jsx: check-react
 	jsx --extension jsx server/static/ server/static/
 	rm -rf server/static/.module-cache
 
+watch:
+	jsx --watch --extension jsx server/static/ server/static/
+
 cleanup:
 	find . -name '.DS_Store' | xargs rm -f
 

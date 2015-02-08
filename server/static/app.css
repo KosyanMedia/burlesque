@@ -37,6 +37,7 @@ thead tr {
 .title {
     position: relative;
     width: 350px;
+    max-width: 350px;
 }
 .name {
     max-width: 350px;

@@ -13,7 +13,10 @@
     <div id="dashboard"></div>
     <script>
     React.render(
-        React.createElement(Dashboard, {api: "http://127.0.0.1:{{.port}}/status", interval: 1000}),
+        React.createElement(Dashboard, {
+            api: "http://127.0.0.1:{{.port}}/status?rates=please",
+            interval: 1000
+        }),
         document.getElementById('dashboard')
     );
     </script>

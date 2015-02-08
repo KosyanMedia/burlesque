@@ -1,6 +1,9 @@
 var Chart = React.createClass({
     getInitialState: function() {
-        return {pointsIn: [], pointsOut: []};
+        return {
+            pointsIn: [],
+            pointsOut: []
+        };
     },
 
     componentDidMount: function() {
@@ -26,7 +29,10 @@ var Chart = React.createClass({
             pointsOut.push(pointOut);
         }
 
-        this.setState({pointsIn: pointsIn, pointsOut: pointsOut});
+        this.setState({
+            pointsIn: pointsIn,
+            pointsOut: pointsOut
+        });
     },
 
     calcMaxDouble: function(a, b) {
@@ -59,11 +65,14 @@ var Chart = React.createClass({
     },
 
     render: function() {
-        var viewBox = [0, 0, this.props.width, this.props.height].join(' ');
+        var viewBox = [0, 0, this.props.width, this.props.height].join(' '),
+            dIn = this.buildPathD(this.state.pointsIn),
+            dOut = this.buildPathD(this.state.pointsOut);
+
         return (
             <svg className="chart" viewBox={viewBox}>
-                <path className="in" d={this.buildPathD(this.state.pointsIn)} />
-                <path className="out" d={this.buildPathD(this.state.pointsOut)} />
+                <path className="in" d={dIn} />
+                <path className="out" d={dOut} />
             </svg>
         );
     }
@@ -110,6 +119,7 @@ var QueuesList = React.createClass({
             if (meta.subscriptions === 0) {
                 subscriptionsClasses.push('zero');
             }
+
             return (
                 <tr key={name}>
                     <td className="title">
@@ -151,7 +161,7 @@ var Dashboard = React.createClass({
         clearTimeout(this.timeout);
     },
 
-    loop: function (timeout, func) {
+    loop: function(timeout, func) {
         var loop = this.loop;
         func();
         this.timeout = setTimeout(function(){
@@ -159,10 +169,11 @@ var Dashboard = React.createClass({
         }, timeout);
     },
 
-    refresh: function () {
+    refresh: function() {
         var xhr = new XMLHttpRequest()
             self = this;
-        xhr.open('GET', '/status?rates=please', true);
+
+        xhr.open('GET', this.props.api, true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
