@@ -22,6 +22,10 @@ WORKDIR /gocode/src/burlesque
 RUN go get -d -v
 RUN go install -v
 
+RUN apt-get purge -y build-essential zlib1g-dev pkg-config golang\
+  && apt-get autoremove -y --purge\
+  && apt-get clean
+
 ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 ENTRYPOINT /gocode/bin/burlesque
