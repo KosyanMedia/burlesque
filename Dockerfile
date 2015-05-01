@@ -26,4 +26,4 @@ ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 
 ENTRYPOINT /gocode/bin/burlesque
 
-EXPOSE "4401"
+EXPOSE 4401
