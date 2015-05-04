@@ -13,8 +13,8 @@ RUN yum install -y tar unzip gcc gcc-c++ zlib-devel\
 	&& chmod 755 burlesque\
 	&& mv ./burlesque /usr/bin/\
 	&& mkdir -p /var/lib/burlesque\
-	&& yum -y hostory undo 2\
-	&& yum clean
+	&& yum -y history undo 2\
+	&& yum clean all
 
 ENV LD_LIBRARY_PATH=/usr/lib
 
