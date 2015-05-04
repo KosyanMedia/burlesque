@@ -1,11 +1,12 @@
-FROM buildpack-deps:jessie
+FROM python:3.4.3 
 
 RUN curl -SL http://fallabs.com/kyotocabinet/pkg/kyotocabinet-1.2.76.tar.gz\
         | tar -zxC /usr/src/\
        && cd /usr/src/kyotocabinet-1.2.76\
        && ./configure --prefix=/usr\
        && make\
-       && make install
+       && make install\
+       && cd / && rm -rf /usr/src/kyotocabinet-1.2.76
 
 RUN apt-get update && apt-get install unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
 
