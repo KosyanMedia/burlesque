@@ -11,7 +11,7 @@ RUN apt-get update\
   	&& go install -v\
   	&& go clean\
     && apt-get purge -y golang libkyotocabinet16-dev\
-    && apt-get autoremove --purge\
+    && apt-get autoremove --purge -y\
     && apt-get clean\
   	&& ls /gocode/src/ | fgrep -v github.com | xargs rm -rf\
   	&& ls /gocode/src/github.com/ | fgrep -v KosyanMedia | xargs rm -rf
