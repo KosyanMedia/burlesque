@@ -5,8 +5,7 @@ RUN curl -SL http://fallabs.com/kyotocabinet/pkg/kyotocabinet-1.2.76.tar.gz\
        && cd /usr/src/kyotocabinet-1.2.76\
        && ./configure --prefix=/usr\
        && make\
-       && make install\
-       && cd / && rm -rf /usr/src/kyotocabinet-1.2.76
+       && make install
 
 RUN mkdir -p /var/lib/burlesque
 WORKDIR /var/lib/burlesque
