@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/ww/cabinet"
+	"github.com/ezotrank/cabinetgo"
 )
 
 const (
