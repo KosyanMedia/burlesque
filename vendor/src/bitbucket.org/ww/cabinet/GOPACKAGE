@@ -1,0 +1,6 @@
+{
+	"name": "cabinet",
+	"description": "Kyoto cabinet bindings for Go",
+	"author": "William Waites",
+	"email": "ww@styx.org"
+}
