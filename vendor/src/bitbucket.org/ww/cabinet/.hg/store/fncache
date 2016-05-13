@@ -1,8 +1,0 @@
-data/.hgtags.i
-data/COPYRIGHT.i
-data/GOPACKAGE.i
-data/Makefile.i
-data/README.html.i
-data/README.txt.i
-data/cabinet.go.i
-data/cabinet_test.go.i

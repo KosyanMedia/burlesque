@@ -1,0 +1,37 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "3eH5XenKCK28s5fpbAeQoPGT3D0=",
+			"path": "github.com/GeertJohan/go.rice",
+			"revision": "0f3f5fde32fd1f755632a3d31ba2ec6d449e387b",
+			"revisionTime": "2016-01-23T21:41:58Z"
+		},
+		{
+			"checksumSHA1": "xECV8VmnSwtMPugLqB1OAXwOs48=",
+			"path": "github.com/GeertJohan/go.rice/embedded",
+			"revision": "0f3f5fde32fd1f755632a3d31ba2ec6d449e387b",
+			"revisionTime": "2016-01-23T21:41:58Z"
+		},
+		{
+			"checksumSHA1": "8i+beEgcVf0q/I7lTqo2ERZM/OU=",
+			"path": "github.com/daaku/go.zipexe",
+			"revision": "a5fe2436ffcb3236e175e5149162b41cd28bd27d",
+			"revisionTime": "2015-03-29T02:31:25Z"
+		},
+		{
+			"checksumSHA1": "JXoquCZjn3Z2wFiKp2S/Fywqt1k=",
+			"path": "github.com/ezotrank/cabinetgo",
+			"revision": "1e9dbfc34f70b3552f4a8c63c185affb88d7c7cf",
+			"revisionTime": "2013-12-16T08:14:17Z"
+		},
+		{
+			"checksumSHA1": "6nmAJBw2phU9MUmkUnqFvbO5urg=",
+			"path": "github.com/kardianos/osext",
+			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
+			"revisionTime": "2015-12-22T15:32:29Z"
+		}
+	],
+	"rootPath": "github.com/KosyanMedia/burlesque"
+}
