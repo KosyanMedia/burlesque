@@ -1,4 +1,4 @@
-burlesque
 *.rice-box.go
 .module-cache
 server/static/app.js
+/clients/python/build
