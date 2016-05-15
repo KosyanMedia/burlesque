@@ -1,6 +1,6 @@
 from logging import Logger
 
-from tornado.gen import coroutine, sleep
+from tornado.gen import coroutine, sleep, maybe_future
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 from tornado.queues import Queue
 from tornado.ioloop import IOLoop
@@ -48,12 +48,13 @@ class Burlesque:
                 resp = yield self.client.fetch(url, request_timeout=self._request_timeout)
                 queue = resp.headers["Queue"]
                 try:
-                    yield fn(queue, resp.body)
+                    yield maybe_future(fn(queue, resp.body))
                 except Exception as e:
                     self.send(queue, resp.body)
                     self.logger.warning("msg sent back to queue %s", queue)
             except HTTPError as e:
-                self.logger.warning("can't receive data from queue: %s, err: %s", url, e)
+                if e.code != 599:  # Do not annoy logs on timeouts
+                    self.logger.warning("can't receive data from queue: %s, err: %s", url, e)
                 yield sleep(1)
 
 @coroutine
