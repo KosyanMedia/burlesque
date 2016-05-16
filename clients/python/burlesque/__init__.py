@@ -51,11 +51,13 @@ class Burlesque:
                     yield maybe_future(fn(queue, resp.body))
                 except Exception as e:
                     self.send(queue, resp.body)
-                    self.logger.warning("msg sent back to queue %s", queue)
+                    self.logger.warning("msg sent back to queue %s, err: %s", queue, e)
+                    yield sleep(0.5)
             except HTTPError as e:
                 if e.code != 599:  # Do not annoy logs on timeouts
                     self.logger.warning("can't receive data from queue: %s, err: %s", url, e)
-                yield sleep(1)
+                else:
+                    yield sleep(1)
 
 @coroutine
 def main():

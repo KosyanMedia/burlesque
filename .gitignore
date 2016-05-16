@@ -2,3 +2,4 @@
 .module-cache
 server/static/app.js
 /clients/python/build
+__pycache__
