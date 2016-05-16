@@ -18,7 +18,7 @@ RUN apt-get update \
   && go get -u github.com/kardianos/govendor \
   && govendor add +external && govendor get \
   && go install \
-  && apt-get purge -y --auto-remove curl ca-certificates \
+  && apt-get purge -y --auto-remove ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/burlesque"]
