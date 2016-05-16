@@ -10,7 +10,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/GeertJohan/go.rice"
 	"github.com/KosyanMedia/burlesque/hub"
 )
 
@@ -32,17 +31,12 @@ func New(port int, h *hub.Hub) *Server {
 		hub:  h,
 	}
 
-	box := rice.MustFindBox("static")
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(box.HTTPBox())))
-
 	http.HandleFunc("/status", s.statusHandler)
 	http.HandleFunc("/debug", s.debugHandler)
 	http.HandleFunc("/publish", s.pubHandler)
 	http.HandleFunc("/subscribe", s.subHandler)
 	http.HandleFunc("/flush", s.flushHandler)
 	http.HandleFunc("/dashboard", s.dashboardHandler)
-
-	s.dashboardTmpl, _ = box.String("dashboard.tmpl")
 
 	return &s
 }
