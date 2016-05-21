@@ -4,16 +4,18 @@ from tornado.gen import coroutine, sleep, maybe_future
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 from tornado.queues import Queue
 from tornado.ioloop import IOLoop
+from tornado.locks import Event
+from collections import defaultdict
+
 
 class Burlesque:
-
     def __init__(self, url, **kwargs):
         self.client = AsyncHTTPClient()
         self.logger = kwargs.get('logger', Logger('burlesque'))
         self._request_timeout = kwargs.get('request_timeout', 30)
         self._retry_count = kwargs.get('retry', 3)
         self._url = url
-        self._queue = Queue(maxsize=64)
+        self._finished = defaultdict(Event)
 
     @coroutine
     def send(self, queue_name, body):
@@ -36,14 +38,24 @@ class Burlesque:
 
     @coroutine
     def listen(self, queues, fn, workers_count=4):
-        [self._worker(queues, fn) for x in range(workers_count)]
-        yield self._queue.put(True)
-        yield self._queue.join()
+        queues = tuple(sorted(queues))
+        self._finished[queues].clear()
+        yield [self._worker(queues, fn) for x in range(workers_count)]
+
+    def stop(self, queues):
+        queues = tuple(sorted(queues))
+        assert queues in self._finished
+        assert not self._finished[queues].is_set()
+        self._finished[tuple(sorted(queues))].set()
+
+    def stop_all(self):
+        for e in self._finished.values():
+            e.set()
 
     @coroutine
     def _worker(self, queues, fn):
         url = '%s/subscribe?queues=%s' % (self._url, ','.join(queues))
-        while True:
+        while not self._finished[queues].is_set():
             try:
                 resp = yield self.client.fetch(url, request_timeout=self._request_timeout)
                 queue = resp.headers["Queue"]
@@ -61,14 +73,15 @@ class Burlesque:
 
 @coroutine
 def main():
-    @coroutine
-    def fn(queue, body):
-        print(queue, body)
+    def fn(queue_name, body):
+        print('Received message:', queue_name, body)
+        queue.stop([sys.argv[2]])
+
     import sys
     import logging
     logger = logging.getLogger('burlesque')
     logger.setLevel('DEBUG')
-    queue = Burlesque(sys.argv[1], logger=logger)
+    queue = Burlesque(sys.argv[1], logger=logger, request_timeout=3)
     yield queue.send(sys.argv[2], sys.argv[3])
     print('msg %s sent to %s' % (sys.argv[2], sys.argv[3]))
     yield queue.listen([sys.argv[2]], fn)
