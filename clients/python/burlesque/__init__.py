@@ -3,7 +3,6 @@ from logging import Logger
 from tornado.gen import coroutine, sleep, maybe_future
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 from tornado.queues import Queue
-from tornado.ioloop import IOLoop
 from tornado.locks import Event
 from collections import defaultdict
 
@@ -92,4 +91,5 @@ docker run -d --name burlesque aviasales/burlesque
 docker run --rm --link burlesque -ti -v `pwd`:/app python:latest /bin/bash -c 'cd app && python3 setup.py install && python3 burlesque/__init__.py http://burlesque:4401 1-test gggg'
 """
 if __name__ == '__main__':
+    from tornado.ioloop import IOLoop
     IOLoop.current().run_sync(main)

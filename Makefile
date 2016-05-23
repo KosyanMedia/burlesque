@@ -11,3 +11,6 @@ docker_tty:
 
 github_release:
 	docker run --rm -v `pwd`:/src/github.com/KosyanMedia/burlesque aviasales/burlesque:latest /bin/bash -c "TAG=$(TAG) TOKEN=$(TOKEN) ./utils/github_release.sh"
+
+test:
+	docker run --rm -v `pwd`:/src/github.com/KosyanMedia/burlesque aviasales/burlesque:latest /bin/bash -c "cd clients/python/burlesque && python3 test.py"

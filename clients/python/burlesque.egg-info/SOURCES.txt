@@ -1,7 +1,0 @@
-setup.py
-burlesque/__init__.py
-burlesque.egg-info/PKG-INFO
-burlesque.egg-info/SOURCES.txt
-burlesque.egg-info/dependency_links.txt
-burlesque.egg-info/requires.txt
-burlesque.egg-info/top_level.txt
