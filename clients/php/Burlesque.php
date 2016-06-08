@@ -54,9 +54,3 @@ class Burlesque {
         }
     }
 }
-
-$b = new Burlesque();
-var_dump($b->put('01-test', 'qwe'));
-var_dump($b->length('01-test'));
-var_dump($b->get(['01-test', '02-test2']));
-var_dump($b->get(['01-test', '02-test2']));
