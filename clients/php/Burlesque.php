@@ -46,11 +46,16 @@ class Burlesque {
 
     public function length($queue)
     {
-        $data = json_decode(file_get_contents($this->url . '/status'), true);
+        $data = $this->status();
         if (isset($data[$queue])) {
             return $data[$queue]['messages'];
         } else {
             return 0;
         }
+    }
+
+    public function status()
+    {
+        return json_decode(file_get_contents($this->url . '/status'), true);
     }
 }
