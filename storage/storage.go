@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jmhodges/levigo"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 const (
@@ -16,25 +16,16 @@ const (
 
 type (
 	Storage struct {
-		db       *levigo.DB
+		db       *leveldb.DB
 		counters map[string]*counter
 	}
 )
 
-var readOptions *levigo.ReadOptions
-var writeOptions *levigo.WriteOptions
-
 func New(path string) (s *Storage, err error) {
-  opts := levigo.NewOptions()
-  opts.SetCache(levigo.NewLRUCache(3<<30))
-  opts.SetCreateIfMissing(true)
-  db, err := levigo.Open(path, opts)
+  db, err := leveldb.OpenFile(path, nil)
   if err != nil {
 		return
 	}
-
-  readOptions = levigo.NewReadOptions()
-  writeOptions = levigo.NewWriteOptions()
 
   s = &Storage{
 		db:       db,
@@ -62,11 +53,11 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
 	}
 
 	key := makeKey(queue, index)
-	message, err := s.db.Get(readOptions, key)
+	message, err := s.db.Get(key, nil)
 	if err != nil {
 		panic(err)
 	}
-	if err := s.db.Delete(writeOptions, key); err != nil {
+	if err := s.db.Delete(key, nil); err != nil {
 		panic(err)
 	}
 	ok = true
@@ -81,7 +72,7 @@ func (s *Storage) Put(queue string, message []byte) (err error) {
 
 	s.counters[queue].tryWrite(func(index int64) bool {
 		key := makeKey(queue, index)
-		err = s.db.Put(writeOptions, key, message)
+		err = s.db.Put(key, message, nil)
 
 		return (err == nil)
 	})
@@ -155,7 +146,7 @@ func (s *Storage) saveState() (err error) {
 	}
 
 	jsn, _ := json.Marshal(state)
-	err = s.db.Put(writeOptions, []byte(stateMetaKey), jsn)
+	err = s.db.Put([]byte(stateMetaKey), jsn, nil)
 
 	return
 }
@@ -166,7 +157,7 @@ func (s *Storage) loadState() (err error) {
 		state = make(map[string]map[string]int64)
 	)
 
-	if jsn, err = s.db.Get(readOptions, []byte(stateMetaKey)); err != nil {
+	if jsn, err = s.db.Get([]byte(stateMetaKey), nil); err != nil {
 		return
 	}
 	if err = json.Unmarshal(jsn, &state); err != nil {
