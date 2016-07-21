@@ -31,7 +31,7 @@ func New(path string) (s *Storage, err error) {
   cfg := &config.Config{
     DBName: "goleveldb",
     LevelDB: config.LevelDBConfig{
-      Compression: false,
+      Compression: true,
       BlockSize: 32 * config.KB,
       WriteBufferSize: 64 * config.MB,
       CacheSize: 512 * config.MB,
