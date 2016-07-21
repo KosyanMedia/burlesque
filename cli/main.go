@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/KosyanMedia/burlesque/client"
+	"./client"
 	"github.com/codegangsta/cli"
 )
 

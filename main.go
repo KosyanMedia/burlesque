@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/KosyanMedia/burlesque/hub"
-	"github.com/KosyanMedia/burlesque/server"
-	"github.com/KosyanMedia/burlesque/storage"
+	"./hub"
+	"./server"
+	"./storage"
 )
 
 func main() {
