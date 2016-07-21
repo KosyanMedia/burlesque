@@ -29,9 +29,10 @@ func New(path string) (s *Storage, err error) {
   )
 
   cfg := &config.Config{
+    DBName: "leveldb",
     DataDir: path,
-    ConnReadBufferSize: 8 * config.KB,
-    ConnWriteBufferSize: 16 * config.KB,
+    ConnReadBufferSize: 8 * config.MB,
+    ConnWriteBufferSize: 16 * config.MB,
   }
   if l, err = ledis.Open(cfg); err != nil {
     return
