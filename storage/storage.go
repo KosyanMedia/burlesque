@@ -30,6 +30,8 @@ func New(path string) (s *Storage, err error) {
 
   cfg := &config.Config{
     DataDir: path,
+    ConnReadBufferSize: 8 * config.KB,
+    ConnWriteBufferSize: 16 * config.KB,
   }
   if l, err = ledis.Open(cfg); err != nil {
     return
