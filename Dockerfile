@@ -19,7 +19,8 @@ RUN apt-get update \
   && govendor add +external && govendor get \
   && go install \
   && apt-get purge -y --auto-remove ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && ln -s /bin/burlesque /bin/goqueue
 
 CMD ["/bin/burlesque"]
 EXPOSE 4401
