@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sync"
 
 	"github.com/ezotrank/cabinetgo"
 )
@@ -18,6 +19,7 @@ type (
 	Storage struct {
 		kyoto    *cabinet.KCDB
 		counters map[string]*counter
+		sync.Mutex
 	}
 )
 
@@ -38,12 +40,14 @@ func New(path string) (s *Storage, err error) {
 }
 
 func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bool) {
+	s.Lock()
 	if _, exist := s.counters[queue]; !exist {
 		return
 	}
 	if size := s.counters[queue].distance(); size == 0 {
 		return
 	}
+	s.Unlock()
 
 	var index int64
 	select {
@@ -53,12 +57,12 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
 	}
 
 	key := makeKey(queue, index)
-	message, err := s.kyoto.Get(key)
-	if err != nil {
-		panic(err)
+	var err error
+	if message, err = s.kyoto.Get(key); err != nil {
+		return
 	}
 	if err := s.kyoto.Remove(key); err != nil {
-		panic(err)
+		return
 	}
 	ok = true
 
@@ -66,6 +70,8 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
 }
 
 func (s *Storage) Put(queue string, message []byte) (err error) {
+	defer s.Unlock()
+	s.Lock()
 	if _, ok := s.counters[queue]; !ok {
 		s.counters[queue] = newCounter(0, 0)
 	}
