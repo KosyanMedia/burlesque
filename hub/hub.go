@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/KosyanMedia/burlesque/stats"
-	"github.com/KosyanMedia/burlesque/storage"
+	"../stats"
+	"../storage"
 )
 
 type (
@@ -63,7 +63,7 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 
 func (h *Hub) Sub(s *Subscription) {
 	for _, queue := range s.Queues {
-		if msg, okGot := h.storage.Get(queue, s.Done()); okGot {
+		if msg, okGot := h.storage.Get(queue); okGot {
 			if okSent := s.Send(Message{queue, msg}); okSent {
 				h.statistics.AddDelivery(queue)
 				return
@@ -116,10 +116,6 @@ func (h *Hub) Rates(queue string) (in, out int64) {
 
 func (h *Hub) RateHistory(queue string) (in, out []int64) {
 	return h.statistics.RateHistory(queue)
-}
-
-func (h *Hub) StorageInfo() map[string]interface{} {
-	return h.storage.Info()
 }
 
 func (h *Hub) cleanupEverySecond() {

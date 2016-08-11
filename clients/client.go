@@ -42,7 +42,6 @@ type (
 		Version      string                 `json:"version"`
 		Gomaxprocs   int                    `json:"gomaxprocs"`
 		Goroutines   int                    `json:"goroutines"`
-		KyotoCabinet map[string]interface{} `json:"kyoto_cabinet"`
 	}
 )
 

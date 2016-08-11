@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/KosyanMedia/burlesque/hub"
+	"../hub"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 )
 
 const (
-	Version = "1.1.0"
+	Version = "1.2.0"
 )
 
 func New(port int, h *hub.Hub) *Server {
@@ -81,7 +81,6 @@ func (s *Server) debugHandler(w http.ResponseWriter, r *http.Request) {
 	info["version"] = Version
 	info["gomaxprocs"] = runtime.GOMAXPROCS(-1)
 	info["goroutines"] = runtime.NumGoroutine()
-	info["kyoto_cabinet"] = s.hub.StorageInfo()
 	jsn, _ := json.Marshal(info)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -103,7 +102,12 @@ func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
-	queues := strings.Split(r.FormValue("queues"), ",")
+  queues_param := r.FormValue("queues")
+  var queues []string
+  if len(queues_param) > 0 {
+	  queues = strings.Split(queues_param, ",")
+  }
+
 	sub := hub.NewSubscription(queues)
 
 	finished := make(chan struct{})

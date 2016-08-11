@@ -124,19 +124,6 @@ func main() {
 				fmt.Println("Burlesque version", info.Version)
 				fmt.Println("\nGOMAXPROCS:", info.Gomaxprocs)
 				fmt.Println("Goroutines:", info.Goroutines)
-				fmt.Println("\nKyoto Cabinet status")
-
-				max := 0
-				for k, _ := range info.KyotoCabinet {
-					if len(k) > max {
-						max = len(k)
-					}
-				}
-				format := fmt.Sprintf("%%-%ds %%v\n", max+1)
-
-				for k, v := range info.KyotoCabinet {
-					fmt.Printf(format, fmt.Sprintf("%s:", k), v)
-				}
 			},
 		},
 	}
