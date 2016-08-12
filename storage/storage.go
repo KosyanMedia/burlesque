@@ -25,7 +25,7 @@ func New(path string) (s *Storage, err error) {
   cfg.LevelDB.BlockSize = 512 * 1024 * 1024
   cfg.LevelDB.CacheSize =  64 * 1024 * 1024 * 1024
   cfg.LevelDB.WriteBufferSize = 256 * 1024 * 1024
-  cfg.DBSyncCommit = 1
+  cfg.DBSyncCommit = 0
   cfg.ConnKeepaliveInterval = 0
   cfg.ConnReadBufferSize = 64 * 1024 * 1024
   cfg.ConnWriteBufferSize = 64 * 1024 * 1024
@@ -51,14 +51,11 @@ func (s *Storage) Get(queue string) (message []byte, ok bool) {
     return
   }
 
-  values, err := s.db.BLPop([][]byte{queue_key}, 3)
-	if err != nil {
-		panic(err)
+  values, err := s.db.BLPop([][]byte{queue_key}, 1)
+	if values == nil || err != nil {
+		return
 	}
 
-  if values == nil {
-    return
-  }
   message = values[1].([]byte)
 	ok = true
 	return
