@@ -22,13 +22,10 @@ func New(path string) (s *Storage, err error) {
 	cfg.DBName = "leveldb"
 	cfg.DataDir = path
   cfg.LevelDB.Compression = true
-  cfg.LevelDB.BlockSize = 512 * 1024 * 1024
-  cfg.LevelDB.CacheSize =  64 * 1024 * 1024 * 1024
-  cfg.LevelDB.WriteBufferSize = 256 * 1024 * 1024
+  cfg.LevelDB.BlockSize = 16 * 1024 * 1024 * 1024
+  cfg.LevelDB.CacheSize =  256 * 1024 * 1024 * 1024
+  cfg.LevelDB.WriteBufferSize = 512 * 1024 * 1024
   cfg.DBSyncCommit = 0
-  cfg.ConnKeepaliveInterval = 0
-  cfg.ConnReadBufferSize = 64 * 1024 * 1024
-  cfg.ConnWriteBufferSize = 64 * 1024 * 1024
 
 	if l, err = ledis.Open(cfg); err != nil {
     return
@@ -45,18 +42,18 @@ func New(path string) (s *Storage, err error) {
 	return
 }
 
-func (s *Storage) Get(queue string) (message []byte, ok bool) {
-  queue_key := []byte(queue)
-  if count, _ := s.db.LLen(queue_key); count == 0 {
-    return
-  }
+func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bool) {
+  select {
+ 	case <-done:
+ 	  return
+  default:
+ 	}
 
-  values, err := s.db.BLPop([][]byte{queue_key}, 1)
-	if values == nil || err != nil {
+  message, err := s.db.LPop([]byte(queue))
+	if message == nil || err != nil {
 		return
 	}
 
-  message = values[1].([]byte)
 	ok = true
 	return
 }

@@ -10,7 +10,6 @@ import (
 	"strings"
 	"text/template"
 	"expvar"
-
 	"../hub"
 )
 
@@ -27,6 +26,7 @@ func init() {
 
 type (
 	Server struct {
+    server        *http.Server
 		port          int
 		hub           *hub.Hub
 		dashboardTmpl string
@@ -54,8 +54,14 @@ func New(port int, h *hub.Hub) *Server {
 }
 
 func (s *Server) Start() {
-	port := fmt.Sprintf(":%d", s.port)
-	if err := http.ListenAndServe(port, nil); err != nil {
+  srv := &http.Server{
+    Addr:           fmt.Sprintf(":%d", s.port),
+    // ReadTimeout:    5 * time.Second,
+    // WriteTimeout:   5 * time.Second,
+    MaxHeaderBytes: 1 << 20,
+  }
+  srv.SetKeepAlivesEnabled(true)
+	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

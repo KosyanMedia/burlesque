@@ -63,7 +63,7 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 
 func (h *Hub) Sub(s *Subscription) {
 	for _, queue := range s.Queues {
-		if msg, okGot := h.storage.Get(queue); okGot {
+		if msg, okGot := h.storage.Get(queue, s.Done()); okGot {
 			if okSent := s.Send(Message{queue, msg}); okSent {
 				h.statistics.AddDelivery(queue)
 				return
