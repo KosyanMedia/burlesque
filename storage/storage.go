@@ -1,94 +1,98 @@
 package storage
 
 import (
-  "github.com/siddontang/ledisdb/ledis"
-  "github.com/siddontang/ledisdb/config"
+  "encoding/binary"
+  "sync"
+  "github.com/jmhodges/levigo"
+  "errors"
 )
 
 type (
 	Storage struct {
-    l     *ledis.Ledis
-		db    *ledis.DB
+		db    *levigo.DB
 	}
+
+  Queue struct {
+  	sync.RWMutex
+  	head    uint64
+  	tail    uint64
+  }
+
 )
+
+
+var (
+  queues = make(map[string]*Queue)
+  db_ro = levigo.NewReadOptions()
+  db_wo = levigo.NewWriteOptions()
+)
+
+func getQueue(queue_key string) *Queue {
+  var ok bool
+  if _, ok = queues[queue_key]; ok == false {
+    queues[queue_key] = &Queue{
+      head: 0,
+      tail: 0,
+    }
+  }
+
+  return queues[queue_key]
+}
+
+func idToKey(id uint64) []byte {
+	key := make([]byte, 8)
+	binary.BigEndian.PutUint64(key, id)
+	return key
+}
+
+func (s *Storage) GetItemById(q *Queue, id uint64) (item []byte, err error) {
+	// Check if empty or out of bounds.
+	if q.Length() == 0 {
+		err = errors.New("Empty queue")
+    return
+	} else if id <= q.head || id > q.tail {
+		err = errors.New("Queue is out of bounds")
+    return
+	}
+
+	// Get item from database.
+	if item, err = s.db.Get(db_ro, idToKey(id)); err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (q *Queue) Length() uint64 {
+	return q.tail - q.head
+}
 
 func New(path string) (s *Storage, err error) {
   var (
-    l *ledis.Ledis
-    db *ledis.DB
+    db *levigo.DB
   )
 
-  cfg := config.NewConfigDefault()
-	cfg.DBName = "rocksdb"
-	cfg.DataDir = path
+  opts := levigo.NewOptions()
+  opts.SetCache(levigo.NewLRUCache(512 * 1024 * 1024))
+  opts.SetCreateIfMissing(true)
+  opts.SetBlockSize(256 * 1024)
+  opts.SetBlockRestartInterval(8)
+  opts.SetMaxOpenFiles(128)
+  opts.SetInfoLog(nil)
+  opts.SetWriteBufferSize(512 * 1024 * 1024)
+  opts.SetParanoidChecks(false)
+  opts.SetCompression(levigo.SnappyCompression)
+  opts.SetFilterPolicy(levigo.NewBloomFilter(32))
 
-  cfg.LevelDB.Compression = true
-  cfg.LevelDB.BlockSize = 536870912 // 512 MB
-  cfg.LevelDB.CacheSize =  536870912 // 512 MB
-  cfg.LevelDB.WriteBufferSize = 536870912 // 512 MB
-
-  //  https://github.com/facebook/rocksdb/wiki/RocksDB-Tuning-Guide
-  cfg.RocksDB.Compression = 1
-  cfg.RocksDB.BlockSize = 2 * 1024 * 1024 // 512 KB
-  cfg.RocksDB.CacheSize =  1024 * 1024 * 1024 // 1 GB
-  cfg.RocksDB.WriteBufferSize = 256 * 1024 * 1024 // 256 MB
-  cfg.RocksDB.MaxWriteBufferNum = 8
-  cfg.RocksDB.MinWriteBufferNumberToMerge = 2
-  cfg.RocksDB.EnableStatistics = false
-  cfg.RocksDB.BackgroundThreads = 1
-  cfg.RocksDB.HighPriorityBackgroundThreads = 4
-  cfg.RocksDB.MaxBackgroundFlushes = 1
-  cfg.RocksDB.AllowOsBuffer = true
-  cfg.RocksDB.DisableWAL = true // !
-  cfg.RocksDB.DisableAutoCompactions = false
-  cfg.RocksDB.UseFsync = false
-  cfg.RocksDB.MaxBackgroundCompactions = 4
-  cfg.RocksDB.DisableDataSync = true // !
-  cfg.RocksDB.TargetFileSizeBase = 64 * 1024 * 1024 // 512 MB
-  cfg.RocksDB.TargetFileSizeMultiplier = 1
-  cfg.RocksDB.NumLevels = 4
-  cfg.RocksDB.Level0FileNumCompactionTrigger = 2
-  cfg.RocksDB.Level0SlowdownWritesTrigger = 12
-  cfg.RocksDB.Level0StopWritesTrigger = 16
-  cfg.RocksDB.MaxBytesForLevelBase = 640 * 1024 * 1024 // 512 MB
-  cfg.RocksDB.MaxBytesForLevelMultiplier = 10
-
-  // cfg.RocksDB.Compression = 0
-  // cfg.RocksDB.BlockSize = 536870912 // 512 MB
-  // cfg.RocksDB.CacheSize =  536870912 // 512 MB
-  // cfg.RocksDB.WriteBufferSize = 536870912 // 512 MB
-  // cfg.RocksDB.MaxWriteBufferNum = 4
-  // cfg.RocksDB.MinWriteBufferNumberToMerge = 2
-  // cfg.RocksDB.EnableStatistics = false
-  // cfg.RocksDB.BackgroundThreads = 1
-  // cfg.RocksDB.HighPriorityBackgroundThreads = 4
-  // cfg.RocksDB.MaxBackgroundCompactions = runtime.GOMAXPROCS(-1)
-  // cfg.RocksDB.MaxBackgroundFlushes = 1
-  // cfg.RocksDB.AllowOsBuffer = false
-  // cfg.RocksDB.DisableWAL = false
-  // cfg.RocksDB.DisableAutoCompactions = true
-  // cfg.RocksDB.UseFsync = true
-  // cfg.RocksDB.MaxBackgroundCompactions = 3
-  // cfg.RocksDB.DisableDataSync = false
-  // cfg.RocksDB.TargetFileSizeBase = 536870912 // 512 MB
-  // cfg.RocksDB.NumLevels = 4
-  // cfg.RocksDB.Level0FileNumCompactionTrigger = 2
-  // cfg.RocksDB.Level0SlowdownWritesTrigger = 8
-  // cfg.RocksDB.Level0StopWritesTrigger = 16
-  // cfg.RocksDB.MaxBytesForLevelBase = 536870912 // 512 MB
-  // cfg.RocksDB.MaxBytesForLevelMultiplier = 10
-  cfg.DBSyncCommit = 0
-
-	if l, err = ledis.Open(cfg); err != nil {
+  if db, err = levigo.Open(path, opts); err != nil {
     return
   }
 
-  if db, err = l.Select(0); err != nil {
-    return
-  }
+  db_ro.SetFillCache(false)
+  db_ro.SetVerifyChecksums(false)
+  db_wo.SetSync(false)
 
 	s = &Storage{
-    l: l,
 		db: db,
 	}
 	return
@@ -101,38 +105,53 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
   default:
  	}
 
-  message, err := s.db.LPop([]byte(queue))
-	if message == nil || err != nil {
+  q := getQueue(queue)
+  q.Lock()
+  defer q.Unlock()
+
+  message, err := s.GetItemById(q, q.head + 1)
+	if err != nil {
 		return
 	}
+
+  if err := s.db.Delete(db_wo, idToKey(q.head + 1)); err != nil {
+    return
+  }
+
+  q.head++
 
 	ok = true
 	return
 }
 
 func (s *Storage) Put(queue string, message []byte) (err error) {
-	_, err = s.db.RPush([]byte(queue), message)
-	return
+  q := getQueue(queue)
+  q.Lock()
+  defer q.Unlock()
+
+  if err = s.db.Put(db_wo, idToKey(q.tail + 1), message); err != nil {
+    return
+  }
+
+  q.tail++
+  return
 }
 
 func (s *Storage) Flush(queue string) (messages [][]byte) {
-  s.db.LClear([]byte(queue))
+  // s.db.LClear([]byte(queue))
 	return
 }
 
-func (s *Storage) QueueSizes() map[string]int64 {
-  var count int64
-	info := make(map[string]int64)
-  members, _ := s.db.Scan(ledis.LIST, nil, 100, true, "")
-  for i := range members {
-    count, _ = s.db.LLen(members[i])
-    info[string(members[i])] = count
+func (s *Storage) QueueSizes() map[string]uint64 {
+	info := make(map[string]uint64)
+  for k, q := range queues {
+    info[k] = q.Length()
   }
 
 	return info
 }
 
 func (s *Storage) Close() (err error) {
-	s.l.Close()
+	s.db.Close()
 	return
 }
