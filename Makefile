@@ -1,7 +1,7 @@
 .PHONY: github_release
 
 docker_build:
-	docker build -t aviasales/burlesque:latest --force-rm --no-cache .
+	docker build -t aviasales/burlesque:latest .
 
 docker_run:
 	docker run --rm -p 4001:4001 aviasales/burlesque:latest
