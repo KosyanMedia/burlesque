@@ -11,7 +11,19 @@ import (
 	"text/template"
   // "time"
 	"../hub"
+  "expvar"
 )
+
+var (
+    counts = expvar.NewMap("counters")
+)
+
+func init() {
+	counts.Add("PubCount", 0)
+	counts.Add("PubBs", 0)
+	counts.Add("SubCount", 0)
+	counts.Add("SubBs", 0)
+}
 
 type (
 	Server struct {
@@ -106,6 +118,8 @@ func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Error(w, "FAIL", 500)
 	}
+  counts.Add("PubCount", 1)
+ 	counts.Add("PubBs", int64(len(msg)))
 }
 
 func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
@@ -134,6 +148,9 @@ func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 	if res, ok := <-sub.Result(); ok {
 		w.Header().Set("Queue", res.Queue)
 		w.Write(res.Message)
+
+    counts.Add("SubCount", 1)
+ 		counts.Add("SubBs", int64(len(res.Message)))
 	}
 }
 

@@ -22,9 +22,9 @@ func New(path string) (s *Storage, err error) {
 	cfg.DBName = "leveldb"
 	cfg.DataDir = path
   cfg.LevelDB.Compression = true
-  cfg.LevelDB.BlockSize = 536870912 // 512 MB
+  cfg.LevelDB.BlockSize = 262144 // 256 KB
   cfg.LevelDB.CacheSize =  536870912 // 512 MB
-  cfg.LevelDB.WriteBufferSize = 536870912 // 512 MB
+  cfg.LevelDB.WriteBufferSize = 536870912   // 256 MB
   cfg.DBSyncCommit = 0
 
 	if l, err = ledis.Open(cfg); err != nil {
