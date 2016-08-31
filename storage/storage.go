@@ -40,6 +40,7 @@ func New(path string) (s *Storage, err error) {
 }
 
 func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bool) {
+	defer s.Unlock()
 	s.Lock()
 	if _, exist := s.counters[queue]; !exist {
 		return
@@ -47,7 +48,6 @@ func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bo
 	if size := s.counters[queue].distance(); size == 0 {
 		return
 	}
-	s.Unlock()
 
 	var index int64
 	select {
