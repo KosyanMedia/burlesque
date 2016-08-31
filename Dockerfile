@@ -11,8 +11,8 @@ WORKDIR /src/github.com/KosyanMedia/burlesque
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates build-essential \
-    libkyotocabinet16 libkyotocabinet16-dev curl git pkg-config git \
-  && curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
+    libkyotocabinet16 libkyotocabinet16-dev curl git pkg-config git
+RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
   && tar -C / -xzf golang.tar.gz \
   && rm -rf golang.tar.gz \
   && go get -u github.com/kardianos/govendor \
