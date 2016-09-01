@@ -14,7 +14,7 @@ import (
 )
 
 var (
-  counts = expvar.NewMap("counters")
+	counts = expvar.NewMap("counters")
 )
 
 func init() {
@@ -26,9 +26,9 @@ func init() {
 
 type (
 	Server struct {
-    server        *http.Server
-		port          int
-		hub           *hub.Hub
+		server				*http.Server
+		port					int
+		hub					 *hub.Hub
 		dashboardTmpl string
 	}
 )
@@ -40,7 +40,7 @@ const (
 func New(port int, h *hub.Hub) *Server {
 	s := Server{
 		port: port,
-		hub:  h,
+		hub:	h,
 	}
 
 	http.HandleFunc("/status", s.statusHandler)
@@ -54,13 +54,13 @@ func New(port int, h *hub.Hub) *Server {
 }
 
 func (s *Server) Start() {
-  srv := &http.Server{
-    Addr:           fmt.Sprintf(":%d", s.port),
-    // ReadTimeout:    5 * time.Second,
-    // WriteTimeout:   5 * time.Second,
-    MaxHeaderBytes: 1 << 20,
-  }
-  srv.SetKeepAlivesEnabled(true)
+	srv := &http.Server{
+		Addr:					 fmt.Sprintf(":%d", s.port),
+		// ReadTimeout:		5 * time.Second,
+		// WriteTimeout:	 5 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	srv.SetKeepAlivesEnabled(true)
 	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
@@ -68,8 +68,8 @@ func (s *Server) Start() {
 
 func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		res       = map[string]map[string]interface{}{}
-		info      = s.hub.Info()
+		res			 = map[string]map[string]interface{}{}
+		info			= s.hub.Info()
 		withRates = (r.FormValue("rates") != "")
 	)
 
@@ -122,11 +122,11 @@ func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
-  queues_param := r.FormValue("queues")
-  var queues []string
-  if len(queues_param) > 0 {
-	  queues = strings.Split(queues_param, ",")
-  }
+	queues_param := r.FormValue("queues")
+	var queues []string
+	if len(queues_param) > 0 {
+		queues = strings.Split(queues_param, ",")
+	}
 
 	sub := hub.NewSubscription(queues)
 
@@ -172,8 +172,8 @@ func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.ExecuteTemplate(w, "dashboard", map[string]interface{}{
-		"version":  Version,
+		"version":	Version,
 		"hostname": hostname,
-		"port":     s.port,
+		"port":		 s.port,
 	})
 }
