@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"../stats"
-	"../storage"
+	"github.com/KosyanMedia/burlesque/stats"
+	"github.com/KosyanMedia/burlesque/storage"
 )
 
 type (

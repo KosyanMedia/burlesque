@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "hqDDDpue/5363luidNMBS8z8eJU=",
+			"path": "github.com/BurntSushi/toml",
+			"revision": "99064174e013895bbd9b025c31100bd1d9b590ca",
+			"revisionTime": "2016-07-17T15:07:09Z"
+		},
+		{
 			"checksumSHA1": "3eH5XenKCK28s5fpbAeQoPGT3D0=",
 			"path": "github.com/GeertJohan/go.rice",
 			"revision": "0f3f5fde32fd1f755632a3d31ba2ec6d449e387b",
@@ -15,10 +21,34 @@
 			"revisionTime": "2016-01-23T21:41:58Z"
 		},
 		{
+			"checksumSHA1": "/qt6v4VchSdBXTzO3av4Hj+cdNE=",
+			"path": "github.com/cupcake/rdb",
+			"revision": "90399abcaaff31d7844fbae7f9acb27109946f7f",
+			"revisionTime": "2016-02-09T14:41:43Z"
+		},
+		{
+			"checksumSHA1": "vAbNAfcRbUYe8mO/t/C2266gvxc=",
+			"path": "github.com/cupcake/rdb/crc64",
+			"revision": "90399abcaaff31d7844fbae7f9acb27109946f7f",
+			"revisionTime": "2016-02-09T14:41:43Z"
+		},
+		{
+			"checksumSHA1": "cXpsV3SotntboBv47AS7yXRjCO8=",
+			"path": "github.com/cupcake/rdb/nopdecoder",
+			"revision": "90399abcaaff31d7844fbae7f9acb27109946f7f",
+			"revisionTime": "2016-02-09T14:41:43Z"
+		},
+		{
 			"checksumSHA1": "8i+beEgcVf0q/I7lTqo2ERZM/OU=",
 			"path": "github.com/daaku/go.zipexe",
 			"revision": "a5fe2436ffcb3236e175e5149162b41cd28bd27d",
 			"revisionTime": "2015-03-29T02:31:25Z"
+		},
+		{
+			"checksumSHA1": "zYnPsNAVm1/ViwCkN++dX2JQhBo=",
+			"path": "github.com/edsrzf/mmap-go",
+			"revision": "935e0e8a636ca4ba70b713f3e38a19e1b77739e8",
+			"revisionTime": "2016-05-12T03:30:02Z"
 		},
 		{
 			"checksumSHA1": "JXoquCZjn3Z2wFiKp2S/Fywqt1k=",
@@ -27,10 +57,184 @@
 			"revisionTime": "2013-12-16T08:14:17Z"
 		},
 		{
+			"checksumSHA1": "W+E/2xXcE1GmJ0Qb784ald0Fn6I=",
+			"path": "github.com/golang/snappy",
+			"revision": "d9eb7a3d35ec988b8585d4a0068e462c27d28380",
+			"revisionTime": "2016-05-29T05:00:41Z"
+		},
+		{
 			"checksumSHA1": "6nmAJBw2phU9MUmkUnqFvbO5urg=",
 			"path": "github.com/kardianos/osext",
 			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
 			"revisionTime": "2015-12-22T15:32:29Z"
+		},
+		{
+			"checksumSHA1": "BbjvNHTHCOH+fiBRVnqgkIODIJQ=",
+			"path": "github.com/siddontang/go/filelock",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "hou29E6PZ7dEDFgXgM9P15cgHr4=",
+			"path": "github.com/siddontang/go/hack",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "pEmPE9Mfq6iydNZ4hi/AIqB81Yk=",
+			"path": "github.com/siddontang/go/ioutil2",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "q9JBxHLJTmYU8qtbFcRUkVUkF2k=",
+			"path": "github.com/siddontang/go/log",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "bHs+IJRpIGI+cyTFgzG9lAEn76o=",
+			"path": "github.com/siddontang/go/num",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "qJG8FILeV/8fJGRm0JGUkFqOKZk=",
+			"path": "github.com/siddontang/go/snappy",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "QfLCOvZ0RTp96/s/0mNGNUzuT1o=",
+			"path": "github.com/siddontang/go/sync2",
+			"revision": "354e14e6c093c661abb29fd28403b3c19cff5514",
+			"revisionTime": "2015-12-27T04:49:29Z"
+		},
+		{
+			"checksumSHA1": "2/olKZI+dQ3Tj+DcbzGDTCniD5s=",
+			"path": "github.com/siddontang/ledisdb/config",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "1X4OyWqWqMHSb5quMK8rcM2cj/Y=",
+			"path": "github.com/siddontang/ledisdb/ledis",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "fqEicQDIhopqGR5lp9NfahPzklg=",
+			"path": "github.com/siddontang/ledisdb/rpl",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "HZDOj+j5BX+QW3IV5Tm6C9g2HR4=",
+			"path": "github.com/siddontang/ledisdb/store",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "lv/KUyyNQc+RknhR34nwYiq9RvI=",
+			"path": "github.com/siddontang/ledisdb/store/driver",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "JUUYIZ61Jj8DkWpnpLbv3OFcvDE=",
+			"path": "github.com/siddontang/ledisdb/store/goleveldb",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "0B9S2KayeaZRX6tNbJoQ8kOP0k8=",
+			"path": "github.com/siddontang/ledisdb/store/leveldb",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "GCoE53RPRd7j65XusK6Ej7UmbUU=",
+			"path": "github.com/siddontang/ledisdb/store/rocksdb",
+			"revision": "2f7cbc730a2e48ba2bc30ec69da86503fc40acc7",
+			"revisionTime": "2016-07-25T13:41:54Z"
+		},
+		{
+			"checksumSHA1": "+hwTHnyT5SrHxClS9I/9NB16bls=",
+			"path": "github.com/siddontang/rdb",
+			"revision": "fc89ed2e418d27e3ea76e708e54276d2b44ae9cf",
+			"revisionTime": "2015-03-07T02:11:20Z"
+		},
+		{
+			"checksumSHA1": "QMPn4XX/OM3SYq3leNhEty32hmk=",
+			"path": "github.com/syndtr/goleveldb/leveldb",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "cWxfp4yXqeUmOjyOaPpGTqgEuBI=",
+			"path": "github.com/syndtr/goleveldb/leveldb/cache",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "5KPgnvCPlR0ysDAqo6jApzRQ3tw=",
+			"path": "github.com/syndtr/goleveldb/leveldb/comparer",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "Vpvz4qmbq/kz0SN95yt0tmSI7JE=",
+			"path": "github.com/syndtr/goleveldb/leveldb/errors",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "eqKeD6DS7eNCtxVYZEHHRKkyZrw=",
+			"path": "github.com/syndtr/goleveldb/leveldb/filter",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "cRn09EwfU3k2ZjvClHYmVFlakRY=",
+			"path": "github.com/syndtr/goleveldb/leveldb/iterator",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "CMBbso8ZuG2kBGDL2Blf/wpeheU=",
+			"path": "github.com/syndtr/goleveldb/leveldb/journal",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "LshzRv+3spfwuHLepRxiyjf/3sQ=",
+			"path": "github.com/syndtr/goleveldb/leveldb/memdb",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "MP/sSiEbzIN5M664sO4r9+dwzV4=",
+			"path": "github.com/syndtr/goleveldb/leveldb/opt",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "XO5e4bQsWDdNqoHbFWy2TKoOWrQ=",
+			"path": "github.com/syndtr/goleveldb/leveldb/storage",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "U070NRTkkUTUFgiuANYiuu81SIU=",
+			"path": "github.com/syndtr/goleveldb/leveldb/table",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
+		},
+		{
+			"checksumSHA1": "4zil8Gwg8VPkDn1YzlgCvtukJFU=",
+			"path": "github.com/syndtr/goleveldb/leveldb/util",
+			"revision": "6ae1797c0b42b9323fc27ff7dcf568df88f2f33d",
+			"revisionTime": "2016-08-25T02:45:22Z"
 		}
 	],
 	"rootPath": "github.com/KosyanMedia/burlesque"

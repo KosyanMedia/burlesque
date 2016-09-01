@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 	"expvar"
-	"../hub"
+	"github.com/KosyanMedia/burlesque/hub"
 )
 
 var (
