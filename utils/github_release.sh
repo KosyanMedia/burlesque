@@ -12,7 +12,7 @@ if [ -z "$TOKEN" ]; then
   exit 1
 fi
 
-LINUX_BIN_PATH=/bin/burlesque
+LINUX_BIN_PATH=/go/bin/burlesque
 
 gzip -9 -f $LINUX_BIN_PATH || exit 1
 

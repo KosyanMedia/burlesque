@@ -6,9 +6,7 @@ RUN apt-get update \
 COPY . /go/src/github.com/KosyanMedia/burlesque
 WORKDIR /go/src/github.com/KosyanMedia/burlesque
 
-RUN set -e \
-  go get -u github.com/kardianos/govendor \
-  make install 
+RUN go get -u github.com/kardianos/govendor && make install 
 
 CMD ["/go/bin/burlesque"]
 EXPOSE 4401
