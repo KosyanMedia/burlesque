@@ -118,10 +118,6 @@ func (h *Hub) RateHistory(queue string) (in, out []int64) {
 	return h.statistics.RateHistory(queue)
 }
 
-func (h *Hub) StorageInfo() map[string]interface{} {
-	return h.storage.Info()
-}
-
 func (h *Hub) cleanupEverySecond() {
 	t := time.NewTicker(1 * time.Second)
 

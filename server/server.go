@@ -10,12 +10,11 @@ import (
 	"strings"
 	"text/template"
 	"expvar"
-
 	"github.com/KosyanMedia/burlesque/hub"
 )
 
 var (
-  counts = expvar.NewMap("counters")
+	counts = expvar.NewMap("counters")
 )
 
 func init() {
@@ -27,20 +26,21 @@ func init() {
 
 type (
 	Server struct {
-		port          int
-		hub           *hub.Hub
+		server				*http.Server
+		port					int
+		hub					 *hub.Hub
 		dashboardTmpl string
 	}
 )
 
 const (
-	Version = "1.1.0"
+	Version = "1.2.0"
 )
 
 func New(port int, h *hub.Hub) *Server {
 	s := Server{
 		port: port,
-		hub:  h,
+		hub:	h,
 	}
 
 	http.HandleFunc("/status", s.statusHandler)
@@ -54,16 +54,22 @@ func New(port int, h *hub.Hub) *Server {
 }
 
 func (s *Server) Start() {
-	port := fmt.Sprintf(":%d", s.port)
-	if err := http.ListenAndServe(port, nil); err != nil {
+	srv := &http.Server{
+		Addr:					 fmt.Sprintf(":%d", s.port),
+		// ReadTimeout:		5 * time.Second,
+		// WriteTimeout:	 5 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	srv.SetKeepAlivesEnabled(true)
+	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
 
 func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		res       = map[string]map[string]interface{}{}
-		info      = s.hub.Info()
+		res			 = map[string]map[string]interface{}{}
+		info			= s.hub.Info()
 		withRates = (r.FormValue("rates") != "")
 	)
 
@@ -93,7 +99,6 @@ func (s *Server) debugHandler(w http.ResponseWriter, r *http.Request) {
 	info["version"] = Version
 	info["gomaxprocs"] = runtime.GOMAXPROCS(-1)
 	info["goroutines"] = runtime.NumGoroutine()
-	info["kyoto_cabinet"] = s.hub.StorageInfo()
 	jsn, _ := json.Marshal(info)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -117,7 +122,12 @@ func (s *Server) pubHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
-	queues := strings.Split(r.FormValue("queues"), ",")
+	queues_param := r.FormValue("queues")
+	var queues []string
+	if len(queues_param) > 0 {
+		queues = strings.Split(queues_param, ",")
+	}
+
 	sub := hub.NewSubscription(queues)
 
 	finished := make(chan struct{})
@@ -162,8 +172,8 @@ func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.ExecuteTemplate(w, "dashboard", map[string]interface{}{
-		"version":  Version,
+		"version":	Version,
 		"hostname": hostname,
-		"port":     s.port,
+		"port":		 s.port,
 	})
 }

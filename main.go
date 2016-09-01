@@ -19,7 +19,7 @@ func main() {
 		port        int
 	)
 
-	flag.StringVar(&storagePath, "storage", "-", "Kyoto Cabinet storage path (e.g. burlesque.kch#dfunit=8#msiz=512M)")
+	flag.StringVar(&storagePath, "storage", "-", "Storage path (eg ./db)")
 	flag.IntVar(&port, "port", 4401, "Server HTTP port")
 	flag.Parse()
 
