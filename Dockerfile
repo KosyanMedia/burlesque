@@ -1,4 +1,4 @@
-FROM golang:1.7.0
+FROM golang:1.8.3
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends --fix-missing libleveldb-dev libleveldb1 libsnappy1
