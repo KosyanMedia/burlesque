@@ -134,15 +134,14 @@ func (h *Hub) cleanup() {
 	h.lock.Lock()
 	defer h.lock.Unlock()
 
-	deleted := 0
-	for i, s := range h.subscribers {
+	tmp := h.subscribers[:0]
+	for _, s := range h.subscribers {
 		select {
 		case <-s.Done():
-			h.subscribers = append(h.subscribers[:i-deleted], h.subscribers[i-deleted+1:]...)
-			deleted++
 			continue
 		default:
 		}
+		tmp = append(tmp, s)
 		for _, queue := range s.Queues {
 			if msg, okGot := h.storage.Get(queue, s.Done()); okGot {
 				if okSent := s.Send(Message{queue, msg}); okSent {
@@ -152,4 +151,5 @@ func (h *Hub) cleanup() {
 			}
 		}
 	}
+	h.subscribers = tmp
 }
