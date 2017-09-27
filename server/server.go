@@ -129,27 +129,19 @@ func (s *Server) subHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sub := hub.NewSubscription(queues)
-
-	finished := make(chan struct{})
-	defer close(finished)
-
-	disconnected := w.(http.CloseNotifier).CloseNotify()
-	go func() {
-		select {
-		case <-disconnected:
-		case <-finished:
-		}
-		sub.Close()
-	}()
-
 	go s.hub.Sub(sub)
 
-	if res, ok := <-sub.Result(); ok {
-		w.Header().Set("Queue", res.Queue)
-		w.Write(res.Message)
-		counts.Add("SubCount", 1)
-		counts.Add("SubBs", int64(len(res.Message)))
+	select {
+	case res, ok := <-sub.Result():
+		if ok {
+			w.Header().Set("Queue", res.Queue)
+			w.Write(res.Message)
+			counts.Add("SubCount", 1)
+			counts.Add("SubBs", int64(len(res.Message)))
+		}
+	case <-r.Context().Done():
 	}
+	sub.Close()
 }
 
 func (s *Server) flushHandler(w http.ResponseWriter, r *http.Request) {

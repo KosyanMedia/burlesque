@@ -39,7 +39,6 @@ func New(st *storage.Storage) *Hub {
 
 func (h *Hub) Pub(queue string, msg []byte) bool {
 	h.statistics.AddMessage(queue)
-
 	for _, s := range h.subscribers {
 		if ok := s.Need(queue); ok {
 			// Check if subscription is already served
@@ -71,7 +70,9 @@ func (h *Hub) Sub(s *Subscription) {
 		}
 	}
 
+	h.lock.Lock()
 	h.subscribers = append(h.subscribers, s)
+	h.lock.Unlock()
 }
 
 func (h *Hub) Flush(queues []string) []MessageDump {
@@ -133,13 +134,22 @@ func (h *Hub) cleanup() {
 	h.lock.Lock()
 	defer h.lock.Unlock()
 
-	deleted := 0
-	for i, s := range h.subscribers {
+	tmp := h.subscribers[:0]
+	for _, s := range h.subscribers {
 		select {
 		case <-s.Done():
-			h.subscribers = append(h.subscribers[:i-deleted], h.subscribers[i-deleted+1:]...)
-			deleted++
+			continue
 		default:
 		}
+		tmp = append(tmp, s)
+		for _, queue := range s.Queues {
+			if msg, okGot := h.storage.Get(queue, s.Done()); okGot {
+				if okSent := s.Send(Message{queue, msg}); okSent {
+					h.statistics.AddDelivery(queue)
+					return
+				}
+			}
+		}
 	}
+	h.subscribers = tmp
 }
