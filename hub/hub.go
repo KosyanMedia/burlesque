@@ -38,6 +38,8 @@ func New(st *storage.Storage) *Hub {
 }
 
 func (h *Hub) Pub(queue string, msg []byte) bool {
+	h.lock.Lock()
+	defer h.lock.Unlock()
 	h.statistics.AddMessage(queue)
 	for _, s := range h.subscribers {
 		if ok := s.Need(queue); ok {
@@ -61,6 +63,8 @@ func (h *Hub) Pub(queue string, msg []byte) bool {
 }
 
 func (h *Hub) Sub(s *Subscription) {
+	h.lock.Lock()
+	defer h.lock.Unlock()
 	for _, queue := range s.Queues {
 		if msg, okGot := h.storage.Get(queue, s.Done()); okGot {
 			if okSent := s.Send(Message{queue, msg}); okSent {
@@ -70,9 +74,7 @@ func (h *Hub) Sub(s *Subscription) {
 		}
 	}
 
-	h.lock.Lock()
 	h.subscribers = append(h.subscribers, s)
-	h.lock.Unlock()
 }
 
 func (h *Hub) Flush(queues []string) []MessageDump {
@@ -88,6 +90,8 @@ func (h *Hub) Flush(queues []string) []MessageDump {
 }
 
 func (h *Hub) Info() map[string]map[string]int64 {
+	h.lock.Lock()
+	defer h.lock.Unlock()
 	info := make(map[string]map[string]int64)
 
 	for queue, size := range h.storage.QueueSizes() {
