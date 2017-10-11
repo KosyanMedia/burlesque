@@ -39,9 +39,9 @@ type (
 		Subscribers int
 	}
 	DebugInfo struct {
-		Version      string                 `json:"version"`
-		Gomaxprocs   int                    `json:"gomaxprocs"`
-		Goroutines   int                    `json:"goroutines"`
+		Version    string `json:"version"`
+		Gomaxprocs int    `json:"gomaxprocs"`
+		Goroutines int    `json:"goroutines"`
 	}
 )
 
