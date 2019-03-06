@@ -96,10 +96,10 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		log.Error(err)
 	}
 
-	ch <- prometheus.MustNewConstMetric(e.queues, prometheus.GaugeValue, float64(len(data)))
+	ch <- prometheus.MustNewConstMetric(e.queues, prometheus.CounterValue, float64(len(data)))
 	for queue, info := range data {
-		ch <- prometheus.MustNewConstMetric(e.messages, prometheus.GaugeValue, float64(info.Messages), queue)
-		ch <- prometheus.MustNewConstMetric(e.subscriptions, prometheus.GaugeValue, float64(info.Subscriptions), queue)
+		ch <- prometheus.MustNewConstMetric(e.messages, prometheus.CounterValue, float64(info.Messages), queue)
+		ch <- prometheus.MustNewConstMetric(e.subscriptions, prometheus.CounterValue, float64(info.Subscriptions), queue)
 	}
 }
 
