@@ -1,22 +1,22 @@
 package storage
 
 import (
-	"github.com/siddontang/ledisdb/ledis"
 	"github.com/siddontang/ledisdb/config"
+	"github.com/siddontang/ledisdb/ledis"
 	"sort"
 )
 
 type (
 	Storage struct {
-		l		 *ledis.Ledis
-		db		*ledis.DB
+		l    *ledis.Ledis
+		db   *ledis.DB
 		keys map[string]bool
 	}
 )
 
 func New(path string) (s *Storage, err error) {
 	var (
-		l *ledis.Ledis
+		l  *ledis.Ledis
 		db *ledis.DB
 	)
 
@@ -25,8 +25,8 @@ func New(path string) (s *Storage, err error) {
 	cfg.DataDir = path
 
 	cfg.LevelDB.Compression = true
-	cfg.LevelDB.BlockSize = 262144 // 256K
-	cfg.LevelDB.CacheSize =	536870912 // 512MB
+	cfg.LevelDB.BlockSize = 262144          // 256K
+	cfg.LevelDB.CacheSize = 536870912       // 512MB
 	cfg.LevelDB.WriteBufferSize = 268435456 // 256MB
 	cfg.DBSyncCommit = 0
 
@@ -39,8 +39,8 @@ func New(path string) (s *Storage, err error) {
 	}
 
 	s = &Storage{
-		l: l,
-		db: db,
+		l:    l,
+		db:   db,
 		keys: make(map[string]bool),
 	}
 
@@ -54,10 +54,10 @@ func New(path string) (s *Storage, err error) {
 
 func (s *Storage) Get(queue string, done <-chan struct{}) (message []byte, ok bool) {
 	select {
- 	case <-done:
- 		return
+	case <-done:
+		return
 	default:
- 	}
+	}
 
 	message, err := s.db.LPop([]byte(queue))
 	if message == nil || err != nil {
@@ -81,7 +81,7 @@ func (s *Storage) Flush(queue string) (messages [][]byte) {
 
 func (s *Storage) GetSortedKeys() []string {
 	keys := make([]string, 0)
-	for k, _ := range s.keys {
+	for k := range s.keys {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
